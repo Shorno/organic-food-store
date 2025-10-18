@@ -97,7 +97,7 @@ export default function Navbar() {
 
     return (
         <header className="border-b shadow-sm">
-            <div className="container mx-auto">
+            <div className="container mx-auto px-4 lg:px-0">
                 <div className="flex items-center justify-between py-2 lg:py-4">
                     {/* Mobile Navigation - Hidden on lg and above */}
                     <div className="flex items-center justify-between w-full lg:hidden">

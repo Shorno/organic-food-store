@@ -13,7 +13,7 @@ export default function UserButton() {
 
     return (
         <Avatar className="size-7 cursor-pointer" asChild>
-            <Link href="/profile" aria-label="User Profile">
+            <Link href="/account/profile" aria-label="User Profile">
                 {data?.user ? (
                     <>
                         <AvatarImage src={data.user.image || ""} />
