@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { ChevronRight, Menu, ShoppingCart, User } from "lucide-react"
-import { ComponentPropsWithoutRef, useState } from "react"
+import {ChevronRight, Menu, ShoppingCart} from "lucide-react"
+import {ComponentPropsWithoutRef, useState} from "react"
 
 import {
     NavigationMenu,
@@ -20,9 +20,10 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import {Button} from "@/components/ui/button"
+import {usePathname} from "next/navigation"
+import {cn} from "@/lib/utils"
+import UserButton from "@/components/client/auth/user-button";
 
 const productCategories: { title: string; href: string; description: string }[] = [
     {
@@ -104,7 +105,7 @@ export default function Navbar() {
                         <Sheet open={open} onOpenChange={setOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon" className="flex-shrink-0">
-                                    <Menu className="h-5 w-5" />
+                                    <Menu className="h-5 w-5"/>
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
                             </SheetTrigger>
@@ -132,13 +133,14 @@ export default function Navbar() {
                                                         )}
                                                     >
                                                         <span>{navItem.name}</span>
-                                                        <ChevronRight className="h-4 w-4" />
+                                                        <ChevronRight className="h-4 w-4"/>
                                                     </Link>
                                                 ) : (
                                                     <div>
-                                                        <div className="flex items-center justify-between px-4 py-3 text-base font-semibold text-foreground">
+                                                        <div
+                                                            className="flex items-center justify-between px-4 py-3 text-base font-semibold text-foreground">
                                                             <span>{navItem.name}</span>
-                                                            <ChevronRight className="h-4 w-4" />
+                                                            <ChevronRight className="h-4 w-4"/>
                                                         </div>
                                                         <div className="ml-2 mt-1 flex flex-col gap-1">
                                                             {navItem.items?.map((category) => (
@@ -152,7 +154,7 @@ export default function Navbar() {
                                                                     )}
                                                                 >
                                                                     <span>{category.title}</span>
-                                                                    <ChevronRight className="h-3 w-3" />
+                                                                    <ChevronRight className="h-3 w-3"/>
                                                                 </Link>
                                                             ))}
                                                         </div>
@@ -175,7 +177,7 @@ export default function Navbar() {
                         {/* Cart Icon - Right */}
                         <Button variant="ghost" size="icon" asChild className="flex-shrink-0">
                             <Link href="/cart" aria-label="Shopping Cart">
-                                <ShoppingCart className="h-5 w-5" />
+                                <ShoppingCart className="h-5 w-5"/>
                             </Link>
                         </Button>
                     </div>
@@ -244,14 +246,11 @@ export default function Navbar() {
                         <div className="flex items-center gap-4 flex-shrink-0">
                             <Button variant="ghost" size="icon" asChild>
                                 <Link href="/cart" aria-label="Shopping Cart">
-                                    <ShoppingCart className="h-5 w-5" />
+                                    <ShoppingCart className="h-5 w-5"/>
                                 </Link>
                             </Button>
-                            <Button variant="ghost" size="icon" asChild>
-                                <Link href="/profile" aria-label="User Profile">
-                                    <User className="h-5 w-5" />
-                                </Link>
-                            </Button>
+
+                           <UserButton/>
                         </div>
                     </div>
                 </div>
