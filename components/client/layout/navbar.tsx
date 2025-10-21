@@ -3,7 +3,7 @@ import Logo from "@/components/Logo";
 import {Button} from "@/components/ui/button";
 import {ShoppingCart, SearchIcon, Menu} from "lucide-react";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
-import UserButton from "@/components/client/auth/user-button";
+import UserButton from "@/components/client/profile/user-button";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import MobileNav from "@/components/client/layout/mobile-nav";
 

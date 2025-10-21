@@ -99,7 +99,7 @@ export default function CategoryNav() {
                                         {category.name}
                                     </NavigationMenuTrigger>
                                     <NavigationMenuContent>
-                                        <ul className="grid w-[500px] gap-3 p-4 md:w-[600px] md:grid-cols-2">
+                                        <ul className="grid w-[500px] gap-3 p-2 md:w-[600px] md:grid-cols-2">
                                             {category.subcategories.map((sub) => (
                                                 <li key={sub.name}>
                                                     <NavigationMenuLink asChild>

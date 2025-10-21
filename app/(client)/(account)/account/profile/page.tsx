@@ -1,6 +1,6 @@
 import { Suspense } from "react"
-import ProfileContent from "@/components/client/auth/profile-content";
-import ProfileSkeleton from "@/components/client/auth/profile-skeleton";
+import ProfileContent from "@/components/client/profile/profile-content";
+import ProfileSkeleton from "@/components/client/profile/profile-skeleton";
 
 export default function ProfilePage() {
     return (
