@@ -11,9 +11,9 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    if (session.user.role !== "admin") {
-        return NextResponse.redirect(new URL("/unauthorized", request.url));
-    }
+    // if (session.user.role !== "admin") {
+    //     return NextResponse.redirect(new URL("/unauthorized", request.url));
+    // }
 
     return NextResponse.next();
 }

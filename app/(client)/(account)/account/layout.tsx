@@ -5,22 +5,9 @@ import type React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import {authClient} from "@/lib/auth-client";
 
 const accountNavLinks = [
-    {
-        label: "My Profile",
-        href: "/account/profile",
-        icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-            </svg>
-        ),
-    },
     {
         label: "My Orders",
         href: "/account/orders",
@@ -31,6 +18,20 @@ const accountNavLinks = [
                     strokeLinejoin="round"
                     strokeWidth={2}
                     d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
+            </svg>
+        ),
+    },
+    {
+        label: "My Profile",
+        href: "/account/profile",
+        icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
             </svg>
         ),
@@ -52,7 +53,21 @@ const accountNavLinks = [
 ]
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
+    const session = authClient.useSession()
     const pathname = usePathname()
+    const lastPath = pathname.split('/').filter(Boolean).pop();
+
+    if (!session?.data?.user) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+                <p className="text-muted-foreground">Please log in to view your {lastPath}.</p>
+                <Button asChild>
+                    <Link href="/login">Login</Link>
+                </Button>
+            </div>
+        )
+    }
+
 
     return (
         <div className="min-h-screen bg-background">
@@ -88,7 +103,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
                     {/* Content Area */}
                     <main className="md:col-span-3">
-                        <div className="bg-card border border-border rounded-lg p-6 md:p-8">{children}</div>
+                        <div className="bg-card border border-border rounded-lg p-6 md:p-8">
+                            {children}
+                        </div>
                     </main>
                 </div>
             </div>

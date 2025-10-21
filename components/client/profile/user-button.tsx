@@ -1,5 +1,5 @@
-import { User, LogOut, ShoppingBag, UserCircle, LayoutDashboard } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {User, LogOut, ShoppingBag, UserCircle, LayoutDashboard, LogIn, UserPlus} from "lucide-react";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -8,10 +8,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
+import {Skeleton} from "@/components/ui/skeleton";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
-import type { LucideIcon } from "lucide-react";
+import {authClient} from "@/lib/auth-client";
+import type {LucideIcon} from "lucide-react";
+import {useRouter} from "next/navigation";
 
 type NavigationItem = {
     label: string;
@@ -22,17 +23,34 @@ type NavigationItem = {
 };
 
 export default function UserButton() {
-    const { data, isPending } = authClient.useSession();
+    const {data, isPending} = authClient.useSession();
+    const router = useRouter()
 
     if (isPending) {
-        return <Skeleton className="size-7 rounded-full" />;
+        return <Skeleton className="size-7 rounded-full"/>;
     }
 
     const handleLogout = async () => {
         await authClient.signOut();
+        router.replace("/")
+
     };
 
+    const isLoggedIn = !!data?.user;
     const isAdmin = data?.user?.role === "admin";
+
+    const authNavItems: NavigationItem[] = [
+        {
+            label: "Login",
+            href: "/login",
+            icon: LogIn,
+        },
+        {
+            label: "Sign Up",
+            href: "/signup",
+            icon: UserPlus,
+        },
+    ];
 
     const adminNavItems: NavigationItem[] = [
         {
@@ -62,7 +80,15 @@ export default function UserButton() {
         variant: "destructive",
     };
 
-    const navigationItems = isAdmin ? adminNavItems : userNavItems;
+    let navigationItems: NavigationItem[] = [];
+
+    if (!isLoggedIn) {
+        navigationItems = [...authNavItems, ...userNavItems];
+    } else if (isAdmin) {
+        navigationItems = adminNavItems;
+    } else {
+        navigationItems = userNavItems;
+    }
 
     return (
         <DropdownMenu>
@@ -70,12 +96,12 @@ export default function UserButton() {
                 <Avatar className="size-7 cursor-pointer">
                     {data?.user ? (
                         <>
-                            <AvatarImage src={data.user.image || ""} />
+                            <AvatarImage src={data.user.image || ""}/>
                             <AvatarFallback>{data.user.name?.[0]}</AvatarFallback>
                         </>
                     ) : (
                         <AvatarFallback>
-                            <User className="h-4 w-4" />
+                            <User className="h-4 w-4"/>
                         </AvatarFallback>
                     )}
                 </Avatar>
@@ -92,35 +118,41 @@ export default function UserButton() {
                                 </p>
                             </div>
                         </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+                        <DropdownMenuSeparator/>
                     </>
                 )}
 
-                {navigationItems.map((item) => (
-                    <DropdownMenuItem key={item.label} asChild={!!item.href}>
-                        {item.href ? (
-                            <Link href={item.href} className="cursor-pointer">
-                                <item.icon className="mr-2 h-4 w-4" />
-                                {item.label}
-                            </Link>
-                        ) : (
-                            <div onClick={item.onClick} className="cursor-pointer">
-                                <item.icon className="mr-2 h-4 w-4" />
-                                {item.label}
-                            </div>
-                        )}
-                    </DropdownMenuItem>
+                {navigationItems.map((item, index) => (
+                    <div key={item.label}>
+                        <DropdownMenuItem asChild={!!item.href}>
+                            {item.href ? (
+                                <Link href={item.href} className="cursor-pointer">
+                                    <item.icon className="mr-2 h-4 w-4"/>
+                                    {item.label}
+                                </Link>
+                            ) : (
+                                <div onClick={item.onClick} className="cursor-pointer">
+                                    <item.icon className="mr-2 h-4 w-4"/>
+                                    {item.label}
+                                </div>
+                            )}
+                        </DropdownMenuItem>
+                        {index < navigationItems.length - 1 && <DropdownMenuSeparator/>}
+                    </div>
                 ))}
 
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem
-                    onClick={logoutItem.onClick}
-                    className="cursor-pointer text-red-600"
-                >
-                    <logoutItem.icon className="mr-2 h-4 w-4" />
-                    {logoutItem.label}
-                </DropdownMenuItem>
+                {isLoggedIn && (
+                    <>
+                        <DropdownMenuSeparator/>
+                        <DropdownMenuItem
+                            onClick={logoutItem.onClick}
+                            className="cursor-pointer text-red-600"
+                        >
+                            <logoutItem.icon className="mr-2 h-4 w-4"/>
+                            {logoutItem.label}
+                        </DropdownMenuItem>
+                    </>
+                )}
             </DropdownMenuContent>
         </DropdownMenu>
     );
