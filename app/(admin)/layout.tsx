@@ -1,8 +1,16 @@
 import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import {AppSidebar} from "@/components/app-sidebar";
 import {SiteHeader} from "@/components/site-header";
+import {checkAuth} from "@/app/actions/auth/checkAuth";
+import {unauthorized} from "next/navigation";
 
-export default function AdminDashboardLayout({children}: { children: React.ReactNode }) {
+export default async function AdminDashboardLayout({children}: { children: React.ReactNode }) {
+    const session = await checkAuth();
+    const isAdmin = session?.user?.role === "admin";
+    if (!isAdmin) {
+        unauthorized()
+    }
+
     return (
         <SidebarProvider
             style={

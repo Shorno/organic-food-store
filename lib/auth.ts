@@ -9,6 +9,16 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true
     },
+    user: {
+        additionalFields: {
+            role: {
+                type: "string",
+                required: true,
+                default: "user",
+                input: false
+            }
+        }
+    },
     socialProviders: {
         github: {
             clientId: process.env.GITHUB_CLIENT_ID as string,
@@ -16,3 +26,5 @@ export const auth = betterAuth({
         },
     },
 })
+
+export type Session = typeof auth.$Infer.Session
