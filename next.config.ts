@@ -31,7 +31,6 @@ const nextConfig: NextConfig = {
             }
         ]
     },
-    cacheComponents : true
 };
 
 export default nextConfig;
