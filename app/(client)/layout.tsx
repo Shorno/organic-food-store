@@ -10,9 +10,12 @@ export default function ClientLayout({
         <>
             <Navbar/>
             <CategoryNav/>
-            <div className={"container mx-auto px-4 md:px-0"}>
+            <div>
                 {children}
             </div>
+            {/*<div className={"container mx-auto px-4 md:px-0"}>*/}
+            {/*    {children}*/}
+            {/*</div>*/}
         </>
     )
 }

@@ -12,7 +12,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import {ListIcon, ShoppingBagIcon, WarehouseIcon} from "lucide-react";
+import {ListIcon, ShoppingBagIcon, SlidersIcon, WarehouseIcon} from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import {authClient} from "@/lib/auth-client";
@@ -40,6 +40,11 @@ const navLinks = {
             title: "Category",
             url: "/admin/dashboard/category",
             icon: WarehouseIcon,
+        },
+        {
+            title: "Featured",
+            url: "/admin/dashboard/featured",
+            icon: SlidersIcon,
         },
     ],
 
