@@ -54,6 +54,7 @@ export default async function createCategory(
 
 
         revalidatePath("/admin/dashboard/category")
+        revalidatePath("/")
 
         return {
             success: true,

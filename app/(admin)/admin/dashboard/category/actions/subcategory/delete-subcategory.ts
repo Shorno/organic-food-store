@@ -26,6 +26,8 @@ export default async function deleteSubcategory(subcategoryId: number) {
             .where(eq(subCategory.id, subcategoryId))
 
         revalidatePath("/admin/dashboard/category")
+        revalidatePath("/")
+
 
         return {
             success: true,

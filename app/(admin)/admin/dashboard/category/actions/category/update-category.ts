@@ -36,6 +36,7 @@ export default async function updateCategory(data: UpdateCategoryFormValues) {
             .where(eq(category.id, data.id))
 
         revalidatePath("/admin/dashboard/category")
+        revalidatePath("/")
 
         return {
             success: true,
