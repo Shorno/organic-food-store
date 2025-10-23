@@ -30,7 +30,8 @@ const nextConfig: NextConfig = {
                 hostname : "res.cloudinary.com"
             }
         ]
-    }
+    },
+    cacheComponents : true
 };
 
 export default nextConfig;

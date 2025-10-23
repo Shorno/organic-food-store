@@ -8,16 +8,16 @@ import getCategoryById from "@/app/(admin)/admin/dashboard/category/actions/cate
 import {notFound} from "next/navigation";
 
 export default async function SubCategoryPage({params}: {
-    params: Promise<{ categoryId: number }>
+    params: Promise<{ categoryId: string }>
 
 }) {
     const {categoryId} = await params;
-    const category = await getCategoryById(categoryId)
+    const category = await getCategoryById(Number(categoryId))
     if (!category) {
         notFound()
     }
 
-    const subcategories = await getSubcategories(categoryId);
+    const subcategories = await getSubcategories(Number(categoryId));
 
     return (
         <div className="container mx-auto py-6">
@@ -38,7 +38,7 @@ export default async function SubCategoryPage({params}: {
             <SubcategoryTable
                 columns={subcategoryColumns}
                 data={subcategories}
-                categoryId={categoryId}
+                categoryId={Number(categoryId)}
                 categoryName={category.name}
             />
         </div>

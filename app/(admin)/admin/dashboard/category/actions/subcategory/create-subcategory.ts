@@ -4,8 +4,9 @@ import {checkAuth} from "@/app/actions/auth/checkAuth"
 import {CreateSubcategoryFormValues, createSubcategorySchema} from "@/lib/schemas/category.scheam"
 import {z} from "zod"
 import {db} from "@/db/config"
-import {revalidatePath} from "next/cache"
+import {revalidatePath, updateTag} from "next/cache"
 import {subCategory} from "@/db/schema";
+import {categoryCacheTag} from "@/cache-tags/category";
 
 export type ActionResult<TData = unknown> =
     | {
@@ -48,13 +49,14 @@ export default async function createSubcategory(
 
         const validData = result.data
 
-        console.log(validData)
 
         const newSubcategory = await db.insert(subCategory).values(validData).returning()
 
 
         revalidatePath("/admin/dashboard/category")
-        revalidatePath(`/admin/dashboard/category/${validData.categoryId}/subcategory`)
+        revalidatePath(`/admin/dashboard/category/${validData.categoryId}`)
+
+        updateTag(categoryCacheTag)
 
         return {
             success: true,

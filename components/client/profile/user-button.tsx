@@ -31,8 +31,15 @@ export default function UserButton() {
     }
 
     const handleLogout = async () => {
-        await authClient.signOut();
-        router.replace("/")
+        await authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    router.refresh()
+                    router.push("/")
+                }
+            }
+        });
+
 
     };
 
@@ -91,7 +98,7 @@ export default function UserButton() {
     }
 
     return (
-        <DropdownMenu>
+        <DropdownMenu key={data?.user?.email || "guest"}>
             <DropdownMenuTrigger asChild>
                 <Avatar className="size-7 cursor-pointer">
                     {data?.user ? (
