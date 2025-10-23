@@ -42,7 +42,7 @@ export default function TableSkeleton({
                             <TableRow key={rowIndex}>
                                 {Array.from({length: columns}).map((_, colIndex) => (
                                     <TableCell key={colIndex}>
-                                        <Skeleton className="h-4 w-full"/>
+                                        <Skeleton className="h-20 w-full"/>
                                     </TableCell>
                                 ))}
                             </TableRow>
