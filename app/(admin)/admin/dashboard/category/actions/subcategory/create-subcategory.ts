@@ -54,6 +54,8 @@ export default async function createSubcategory(
 
         revalidatePath("/admin/dashboard/category")
         revalidatePath(`/admin/dashboard/category/${validData.categoryId}`)
+        revalidatePath("/")
+
 
 
         return {
