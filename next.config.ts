@@ -1,7 +1,36 @@
-import type { NextConfig } from "next";
+import type {NextConfig} from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+    experimental: {
+        authInterrupts: true
+    },
+    async redirects() {
+        return [
+            {
+                source: "/admin",
+                destination: "/admin/dashboard/orders",
+                permanent: false,
+            },
+            {
+                source: "/admin/dashboard",
+                destination: "/admin/dashboard/orders",
+                permanent: false,
+            },
+            {
+                source: "/dashboard",
+                destination: "/admin/dashboard/orders",
+                permanent: false,
+            },
+
+        ]
+    },
+    images : {
+        remotePatterns : [
+            {
+                hostname : "res.cloudinary.com"
+            }
+        ]
+    }
 };
 
 export default nextConfig;
