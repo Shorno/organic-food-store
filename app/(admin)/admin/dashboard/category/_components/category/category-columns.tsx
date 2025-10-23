@@ -18,7 +18,7 @@ import NewSubcategoryDialog from "../subcategory/new-subcategory-dialog"
 import EditCategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/category/edit-category-dialog";
 import DeleteCategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/category/delete-category-dialog";
 
-interface CategoryWithSubcategories extends Category {
+export interface CategoryWithSubcategories extends Category {
     subCategory: SubCategory[]
 }
 
