@@ -1,6 +1,6 @@
-import getCategories from "@/app/(admin)/admin/dashboard/category/actions/get-categories";
-import CategoryTable from "@/app/(admin)/admin/dashboard/category/_components/category-table";
-import {categoryColumn} from "@/app/(admin)/admin/dashboard/category/_components/category-columns";
+import getCategories from "@/app/(admin)/admin/dashboard/category/actions/category/get-categories";
+import CategoryTable from "@/app/(admin)/admin/dashboard/category/_components/category/category-table";
+import {categoryColumn} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
 
 export default async function CategoryPage() {
     const categories = await getCategories()

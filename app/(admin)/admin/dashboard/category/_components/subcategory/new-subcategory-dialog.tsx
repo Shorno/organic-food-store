@@ -27,7 +27,7 @@ import {Switch} from "@/components/ui/switch"
 import ImageUploader from "@/components/ImageUploader"
 import {generateSlug} from "@/utils/generate-slug"
 import {useTransition} from "react"
-import createSubcategory from "@/app/(admin)/admin/dashboard/category/actions/create-subcategory"
+import createSubcategory from "@/app/(admin)/admin/dashboard/category/actions/subcategory/create-subcategory"
 import {Loader} from "lucide-react"
 import {createSubcategorySchema} from "@/lib/schemas/category.scheam";
 

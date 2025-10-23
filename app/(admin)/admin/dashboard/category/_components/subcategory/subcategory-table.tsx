@@ -24,7 +24,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import NewSubcategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/new-subcategory-dialog"
+import NewSubcategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/subcategory/new-subcategory-dialog"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]

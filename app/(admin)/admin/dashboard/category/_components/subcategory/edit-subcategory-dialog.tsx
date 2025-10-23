@@ -28,39 +28,40 @@ import ImageUploader from "@/components/ImageUploader"
 import {generateSlug} from "@/utils/generate-slug"
 import {useTransition} from "react"
 import {Loader} from "lucide-react"
-import {updateCategorySchema} from "@/lib/schemas/category.scheam"
-import {Category} from "@/db/schema/category"
-import updateCategory from "@/app/(admin)/admin/dashboard/category/actions/update-category"
+import {updateSubcategorySchema} from "@/lib/schemas/category.scheam"
+import {SubCategory} from "@/db/schema"
+import updateSubcategory from "@/app/(admin)/admin/dashboard/category/actions/subcategory/update-subcategory"
 
-interface EditCategoryDialogProps {
-    category: Category
+interface EditSubcategoryDialogProps {
+    subcategory: SubCategory
 }
 
-export default function EditCategoryDialog({category}: EditCategoryDialogProps) {
+export default function EditSubcategoryDialog({subcategory}: EditSubcategoryDialogProps) {
     const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
 
     const form = useForm({
         defaultValues: {
-            id: category.id,
-            name: category.name,
-            slug: category.slug,
-            image: category.image,
-            isActive: category.isActive,
-            displayOrder: category.displayOrder,
+            id: subcategory.id,
+            name: subcategory.name,
+            slug: subcategory.slug,
+            image: subcategory.image,
+            isActive: subcategory.isActive,
+            displayOrder: subcategory.displayOrder,
+            categoryId: subcategory.categoryId,
         },
 
         validators: {
-            onSubmit: updateCategorySchema,
+            onSubmit: updateSubcategorySchema,
         },
         onSubmit: async ({value}) => {
             startTransition(async () => {
                 try {
-                    const result = await updateCategory(value)
+                    const result = await updateSubcategory(value)
                     if (!result.success) {
                         switch (result.status) {
                             case 400:
-                                toast.error("Invalid category data.", {
+                                toast.error("Invalid subcategory data.", {
                                     description: "Please check your form inputs.",
                                 })
                                 break
@@ -68,19 +69,19 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                                 toast.error("You are not authorized to perform this action.")
                                 break
                             case 404:
-                                toast.error("Category not found.")
+                                toast.error("Subcategory not found.")
                                 break
                             default:
                                 toast.error(result.error || "Something went wrong.")
                         }
-                        console.error("Update category failed:", result)
+                        console.error("Update subcategory failed:", result)
                         return
                     }
                     toast.success(result.message)
                     setOpen(false)
                 } catch (error) {
                     console.error("Unexpected error:", error)
-                    toast.error("An unexpected error occurred while updating the category.")
+                    toast.error("An unexpected error occurred while updating the subcategory.")
                 }
             })
         },
@@ -101,13 +102,13 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Edit Category</DialogTitle>
+                    <DialogTitle>Edit Subcategory</DialogTitle>
                     <DialogDescription>
-                        Update the details of {category.name} category.
+                        Update the details of {subcategory.name} subcategory.
                     </DialogDescription>
                 </DialogHeader>
                 <form
-                    id="edit-category-form"
+                    id="edit-subcategory-form"
                     onSubmit={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
@@ -122,11 +123,11 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                                 field.state.meta.isTouched && !field.state.meta.isValid
                             return (
                                 <Field data-invalid={isInvalid}>
-                                    <FieldLabel htmlFor={field.name}>Category Image</FieldLabel>
+                                    <FieldLabel htmlFor={field.name}>Subcategory Image</FieldLabel>
                                     <ImageUploader
                                         value={field.state.value}
                                         onChange={field.handleChange}
-                                        folder="categories"
+                                        folder="subcategories"
                                         maxSizeMB={5}
                                     />
                                     <FieldDescription>
@@ -140,7 +141,7 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                         }}
                     </form.Field>
 
-                    {/* Category Name */}
+                    {/* Subcategory Name */}
                     <form.Field name="name">
                         {(field) => {
                             const isInvalid =
@@ -148,7 +149,7 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                             return (
                                 <Field data-invalid={isInvalid}>
                                     <FieldLabel htmlFor={field.name}>
-                                        Category Name *
+                                        Subcategory Name *
                                     </FieldLabel>
                                     <Input
                                         id={field.name}
@@ -160,7 +161,7 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                                             autoGenerateSlugFromName(e.target.value)
                                         }}
                                         aria-invalid={isInvalid}
-                                        placeholder="Electronics"
+                                        placeholder="Smartphones"
                                         autoComplete="off"
                                     />
                                     {isInvalid && (
@@ -186,7 +187,7 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                                         onBlur={field.handleBlur}
                                         onChange={(e) => field.handleChange(e.target.value)}
                                         aria-invalid={isInvalid}
-                                        placeholder="electronics"
+                                        placeholder="smartphones"
                                         autoComplete="off"
                                     />
                                     <FieldDescription>
@@ -240,7 +241,7 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                                 <FieldContent>
                                     <FieldLabel htmlFor={field.name}>Active Status</FieldLabel>
                                     <FieldDescription>
-                                        Inactive categories won&#39;t be visible
+                                        Inactive subcategories won&#39;t be visible
                                     </FieldDescription>
                                 </FieldContent>
                                 <Switch
@@ -262,10 +263,10 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                     </Button>
                     <Button
                         type="submit"
-                        form="edit-category-form"
+                        form="edit-subcategory-form"
                         disabled={isPending}
                     >
-                        {isPending ? <Loader className="animate-spin"/> : "Update Category"}
+                        {isPending ? <Loader className="animate-spin"/> : "Update Subcategory"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

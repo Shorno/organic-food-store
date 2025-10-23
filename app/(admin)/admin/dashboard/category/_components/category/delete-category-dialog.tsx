@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import {useTransition} from "react"
 import {Loader} from "lucide-react"
-import deleteCategory from "@/app/(admin)/admin/dashboard/category/actions/delete-category"
+import deleteCategory from "@/app/(admin)/admin/dashboard/category/actions/category/delete-category"
 import {Category, SubCategory} from "@/db/schema/category"
 
 interface DeleteCategoryDialogProps {

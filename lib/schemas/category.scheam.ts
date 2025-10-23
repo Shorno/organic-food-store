@@ -35,8 +35,11 @@ export const createSubcategorySchema = createCategorySchema.extend({
 export const updateCategorySchema = createCategorySchema.extend({
     id: z.number({error : "Category ID is required."}).int().nonoptional()
 })
-
+export const updateSubcategorySchema = createSubcategorySchema.extend({
+    id: z.number({error : "Subcategory ID is required."}).int().nonoptional()
+})
 
 export type CreateCategoryFormValues = z.infer<typeof createCategorySchema>
 export type CreateSubcategoryFormValues = z.infer<typeof createSubcategorySchema>
 export type UpdateCategoryFormValues = z.infer<typeof updateCategorySchema>
+export type UpdateSubcategoryFormValues = z.infer<typeof updateSubcategorySchema>

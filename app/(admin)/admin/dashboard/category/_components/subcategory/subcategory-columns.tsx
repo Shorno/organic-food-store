@@ -1,30 +1,22 @@
 "use client"
 
 import {ColumnDef} from "@tanstack/react-table"
-import {ArrowUpDown, Eye, MoreHorizontal} from "lucide-react"
+import {ArrowUpDown, MoreHorizontal} from "lucide-react"
 import Image from "next/image"
-import Link from "next/link"
 
 import {Button} from "@/components/ui/button"
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {Badge} from "@/components/ui/badge"
-import {Category, SubCategory} from "@/db/schema/category"
-import NewSubcategoryDialog from "./new-subcategory-dialog"
-import EditCategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/edit-category-dialog";
-import DeleteCategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/delete-category-dialog";
+import {SubCategory} from "@/db/schema";
+import EditSubcategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/subcategory/edit-subcategory-dialog";
+import DeleteSubcategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/subcategory/delete-subcategory-dialog";
 
-interface CategoryWithSubcategories extends Category {
-    subCategory: SubCategory[]
-}
-
-
-export const categoryColumn: ColumnDef<CategoryWithSubcategories>[] = [
+export const subcategoryColumns: ColumnDef<SubCategory>[] = [
     {
         accessorKey: "image",
         header: "Image",
@@ -103,41 +95,11 @@ export const categoryColumn: ColumnDef<CategoryWithSubcategories>[] = [
         size: 150,
     },
     {
-        id: "subcategories",
-        header: () => <div className="text-center">Subcategories</div>,
-        cell: ({row}) => {
-            const category = row.original
-            return (
-                <div className="flex justify-center gap-2">
-                    {
-                        category.subCategory.length > 0 ? (
-                            <Button asChild variant="outline" size="sm">
-                                <Link href={`/admin/dashboard/category/${category.id}`}>
-                                    <Eye className="h-4 w-4 mr-1"/>
-                                    View ({category.subCategory.length})
-                                </Link>
-                            </Button>
-                        ) : (
-                            <Button variant="ghost" size="sm" className={"text-muted-foreground"}>
-                                    N/A
-                            </Button>
-                        )
-                    }
-                    <NewSubcategoryDialog
-                        categoryId={category.id}
-                        categoryName={category.name}
-                    />
-                </div>
-            )
-        },
-        size: 180,
-    },
-    {
         id: "actions",
         header: () => <div className="text-center">Actions</div>,
         enableHiding: false,
         cell: ({row}) => {
-            const category = row.original
+            const subcategory = row.original
 
             return (
                 <div className="flex justify-center">
@@ -149,9 +111,9 @@ export const categoryColumn: ColumnDef<CategoryWithSubcategories>[] = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <EditCategoryDialog category={category} />
+                            <EditSubcategoryDialog subcategory={subcategory} />
                             <DropdownMenuSeparator/>
-                            <DeleteCategoryDialog category={category} />
+                            <DeleteSubcategoryDialog subcategory={subcategory} />
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

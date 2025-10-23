@@ -1,10 +1,10 @@
-import getSubcategories from "@/app/(admin)/admin/dashboard/category/actions/get-subcategories";
+import getSubcategories from "@/app/(admin)/admin/dashboard/category/actions/subcategory/get-subcategories";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import {ArrowLeft} from "lucide-react";
-import SubcategoryTable from "@/app/(admin)/admin/dashboard/category/_components/subcategory-table";
-import {subcategoryColumns} from "@/app/(admin)/admin/dashboard/category/_components/subcategory-columns";
-import getCategoryById from "@/app/(admin)/admin/dashboard/category/actions/get-category-by-id";
+import SubcategoryTable from "@/app/(admin)/admin/dashboard/category/_components/subcategory/subcategory-table";
+import {subcategoryColumns} from "@/app/(admin)/admin/dashboard/category/_components/subcategory/subcategory-columns";
+import getCategoryById from "@/app/(admin)/admin/dashboard/category/actions/category/get-category-by-id";
 import {notFound} from "next/navigation";
 
 export default async function SubCategoryPage({params}: {
