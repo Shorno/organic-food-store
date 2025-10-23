@@ -4,7 +4,6 @@ import {categoryColumn} from "@/app/(admin)/admin/dashboard/category/_components
 
 export default async function CategoryPage() {
     const categories = await getCategories()
-    console.log(categories)
 
     return (
         <div className={"container mx-auto"}>

@@ -16,6 +16,8 @@ import {
 import {Badge} from "@/components/ui/badge"
 import {Category, SubCategory} from "@/db/schema/category"
 import NewSubcategoryDialog from "./new-subcategory-dialog"
+import EditCategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/edit-category-dialog";
+import DeleteCategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/delete-category-dialog";
 
 interface CategoryWithSubcategories extends Category {
     subCategory: SubCategory[]
@@ -147,16 +149,14 @@ export const categoryColumn: ColumnDef<CategoryWithSubcategories>[] = [
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Edit category</DropdownMenuItem>
+                            <EditCategoryDialog category={category} />
                             <DropdownMenuSeparator/>
-                            <DropdownMenuItem className="text-destructive">
-                                Delete category
-                            </DropdownMenuItem>
+                            <DeleteCategoryDialog category={category} />
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
             )
         },
         size: 80,
-    },
+    }
 ]
