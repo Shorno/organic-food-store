@@ -1,5 +1,4 @@
 "use client"
-
 import Link from "next/link"
 import Image from "next/image"
 import {LayoutGrid } from "lucide-react"
@@ -11,61 +10,23 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import getCategoryWithSubcategory from "@/app/(client)/actions/get-category-with-subcategory";
+import {useEffect, useState} from "react";
+import {CategoryWithSubcategories} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
 
-const categories = [
-    {
-        name: "Honey",
-        image: "/images/categories/honey.jpg",
-        subcategories: [
-            { name: "Raw Honey", href: "/categories/honey/raw-honey", image: "/images/subcategories/raw-honey.jpg" },
-            { name: "Manuka Honey", href: "/categories/honey/manuka", image: "/images/subcategories/manuka.jpg" },
-            { name: "Wildflower Honey", href: "/categories/honey/wildflower", image: "/images/subcategories/wildflower.jpg" },
-            { name: "Acacia Honey", href: "/categories/honey/acacia", image: "/images/subcategories/acacia.jpg" },
-        ]
-    },
-    {
-        name: "Nuts & Seeds",
-        image: "/images/categories/nuts.jpg",
-        subcategories: [
-            { name: "Almonds", href: "/categories/nuts/almonds", image: "/images/subcategories/almonds.jpg" },
-            { name: "Walnuts", href: "/categories/nuts/walnuts", image: "/images/subcategories/walnuts.jpg" },
-            { name: "Cashews", href: "/categories/nuts/cashews", image: "/images/subcategories/cashews.jpg" },
-            { name: "Chia Seeds", href: "/categories/nuts/chia-seeds", image: "/images/subcategories/chia.jpg" },
-        ]
-    },
-    {
-        name: "Oils",
-        image: "/images/categories/oils.jpg",
-        subcategories: [
-            { name: "Olive Oil", href: "/categories/oils/olive", image: "/images/subcategories/olive-oil.jpg" },
-            { name: "Coconut Oil", href: "/categories/oils/coconut", image: "/images/subcategories/coconut-oil.jpg" },
-            { name: "Mustard Oil", href: "/categories/oils/mustard", image: "/images/subcategories/mustard-oil.jpg" },
-            { name: "Sesame Oil", href: "/categories/oils/sesame", image: "/images/subcategories/sesame-oil.jpg" },
-        ]
-    },
-    {
-        name: "Spices",
-        image: "/images/categories/spices.jpg",
-        subcategories: [
-            { name: "Turmeric", href: "/categories/spices/turmeric", image: "/images/subcategories/turmeric.jpg" },
-            { name: "Cinnamon", href: "/categories/spices/cinnamon", image: "/images/subcategories/cinnamon.jpg" },
-            { name: "Black Pepper", href: "/categories/spices/pepper", image: "/images/subcategories/pepper.jpg" },
-            { name: "Cumin", href: "/categories/spices/cumin", image: "/images/subcategories/cumin.jpg" },
-        ]
-    },
-    {
-        name: "Grains & Rice",
-        image: "/images/categories/grains.jpg",
-        subcategories: [
-            { name: "Basmati Rice", href: "/categories/grains/basmati", image: "/images/subcategories/basmati.jpg" },
-            { name: "Quinoa", href: "/categories/grains/quinoa", image: "/images/subcategories/quinoa.jpg" },
-            { name: "Oats", href: "/categories/grains/oats", image: "/images/subcategories/oats.jpg" },
-            { name: "Brown Rice", href: "/categories/grains/brown-rice", image: "/images/subcategories/brown-rice.jpg" },
-        ]
-    },
-]
+
 
 export default function MobileNav() {
+    const [categories, setCategories] = useState<CategoryWithSubcategories[]>([]);
+
+    useEffect(() => {
+        async function fetchCategories() {
+            const data = await getCategoryWithSubcategory();
+            setCategories(data);
+        }
+        fetchCategories();
+    }, []);
+
     return (
         <ScrollArea className="h-full py-6">
             <div className="px-4 pb-4">
@@ -76,11 +37,17 @@ export default function MobileNav() {
                     </Button>
                 </Link>
 
-                <Accordion type="single" collapsible className="w-full">
-                    {categories.map((category, idx) => (
-                        <AccordionItem key={category.name} value={`item-${idx}`}>
-                            <AccordionTrigger className="hover:no-underline">
-                                <div className="flex items-center gap-3">
+                <div className="w-full">
+                    {categories.map((category, idx) => {
+                        const hasSubcategories = category.subCategory && category.subCategory.length > 0;
+
+                        if (!hasSubcategories) {
+                            return (
+                                <Link
+                                    key={category.name}
+                                    href={`/${category.slug}`}
+                                    className="flex items-center gap-3 py-2  mb-2 rounded-md hover:bg-accent transition-colors"
+                                >
                                     <div className="relative h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
                                         <Image
                                             src={category.image}
@@ -90,33 +57,54 @@ export default function MobileNav() {
                                         />
                                     </div>
                                     <span className="font-medium">{category.name}</span>
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                                <div className="space-y-1 pl-11">
-                                    {category.subcategories.map((sub) => (
-                                        <Link
-                                            key={sub.name}
-                                            href={sub.href}
-                                            className="flex items-center gap-3 py-2 px-2 rounded-md hover:bg-accent transition-colors"
-                                        >
-                                            <div className="relative h-10 w-10 rounded-md overflow-hidden flex-shrink-0">
+                                </Link>
+                            );
+                        }
+
+                        // Render categories with subcategories as AccordionItem
+                        return (
+                            <Accordion type="single" collapsible className="w-full" key={category.name}>
+                                <AccordionItem value={`item-${idx}`}>
+                                    <AccordionTrigger className="hover:no-underline">
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
                                                 <Image
-                                                    src={sub.image}
-                                                    alt={sub.name}
+                                                    src={category.image}
+                                                    alt={category.name}
                                                     fill
                                                     className="object-cover"
                                                 />
                                             </div>
-                                            <span className="text-sm">{sub.name}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                                            <span className="font-medium">{category.name}</span>
+                                        </div>
+                                    </AccordionTrigger>
+                                    <AccordionContent>
+                                        <div className="space-y-1 pl-11">
+                                            {category.subCategory.map((sub) => (
+                                                <Link
+                                                    key={sub.name}
+                                                    href={`/${category.slug}/${sub.slug}`}
+                                                    className="flex items-center gap-3 py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                                                >
+                                                    <div className="relative h-10 w-10 rounded-md overflow-hidden flex-shrink-0">
+                                                        <Image
+                                                            src={sub.image}
+                                                            alt={sub.name}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    </div>
+                                                    <span className="text-sm">{sub.name}</span>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                        );
+                    })}
+                </div>
             </div>
         </ScrollArea>
-    )
+    );
 }
