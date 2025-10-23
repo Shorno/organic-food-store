@@ -17,10 +17,7 @@ export default async function SubCategoryPage({params}: {
         notFound()
     }
 
-
-
     const subcategories = await getSubcategories(categoryId);
-    console.log(subcategories)
 
     return (
         <div className="container mx-auto py-6">

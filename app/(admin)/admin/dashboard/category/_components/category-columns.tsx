@@ -14,10 +14,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {Badge} from "@/components/ui/badge"
-import {Category} from "@/db/schema/category"
+import {Category, SubCategory} from "@/db/schema/category"
 import NewSubcategoryDialog from "./new-subcategory-dialog"
 
-export const categoryColumn: ColumnDef<Category>[] = [
+interface CategoryWithSubcategories extends Category {
+    subCategory: SubCategory[]
+}
+
+
+export const categoryColumn: ColumnDef<CategoryWithSubcategories>[] = [
     {
         accessorKey: "image",
         header: "Image",
@@ -102,12 +107,20 @@ export const categoryColumn: ColumnDef<Category>[] = [
             const category = row.original
             return (
                 <div className="flex justify-center gap-2">
-                    <Button asChild variant="outline" size="sm">
-                        <Link href={`/admin/dashboard/category/${category.id}`}>
-                            <Eye className="h-4 w-4 mr-1"/>
-                            View
-                        </Link>
-                    </Button>
+                    {
+                        category.subCategory.length > 0 ? (
+                            <Button asChild variant="outline" size="sm">
+                                <Link href={`/admin/dashboard/category/${category.id}`}>
+                                    <Eye className="h-4 w-4 mr-1"/>
+                                    View ({category.subCategory.length})
+                                </Link>
+                            </Button>
+                        ) : (
+                            <Button variant="ghost" size="sm" className={"text-muted-foreground"}>
+                                    N/A
+                            </Button>
+                        )
+                    }
                     <NewSubcategoryDialog
                         categoryId={category.id}
                         categoryName={category.name}
