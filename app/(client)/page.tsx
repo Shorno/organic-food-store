@@ -1,7 +1,12 @@
+import FeaturedImages from "@/components/home/featured-images";
+
 export default function HomePage() {
     return (
         <>
-            Home pagd
+            <FeaturedImages/>
+            <div className={"custom-container"}>
+                fddf
+            </div>
         </>
     )
 }
