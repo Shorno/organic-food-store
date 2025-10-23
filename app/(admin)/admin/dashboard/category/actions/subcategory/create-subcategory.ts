@@ -48,13 +48,13 @@ export default async function createSubcategory(
 
         const validData = result.data
 
-        console.log(validData)
 
         const newSubcategory = await db.insert(subCategory).values(validData).returning()
 
 
         revalidatePath("/admin/dashboard/category")
-        revalidatePath(`/admin/dashboard/category/${validData.categoryId}/subcategory`)
+        revalidatePath(`/admin/dashboard/category/${validData.categoryId}`)
+
 
         return {
             success: true,

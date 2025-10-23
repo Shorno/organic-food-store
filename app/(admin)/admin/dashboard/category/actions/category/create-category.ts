@@ -49,11 +49,9 @@ export default async function createCategory(
 
         const validData = result.data
 
-        console.log(validData)
 
         const newCategory = await db.insert(category).values(validData).returning()
 
-        console.log(newCategory)
 
         revalidatePath("/admin/dashboard/category")
 

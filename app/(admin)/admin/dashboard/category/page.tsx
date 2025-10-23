@@ -1,14 +1,14 @@
-import getCategories from "@/app/(admin)/admin/dashboard/category/actions/category/get-categories";
-import CategoryTable from "@/app/(admin)/admin/dashboard/category/_components/category/category-table";
-import {categoryColumn} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
+import CategoryList from "@/app/(admin)/admin/dashboard/category/_components/category/category-list";
+import {Suspense} from "react";
+import TableSkeleton from "@/app/(admin)/admin/dashboard/category/_components/table-skeleton";
 
-export default async function CategoryPage() {
-    const categories = await getCategories()
-
+export default function CategoryPage() {
     return (
         <div className={"container mx-auto"}>
             <h1 className="text-2xl font-bold mb-4">Categories</h1>
-            <CategoryTable columns={categoryColumn} data={categories}/>
+            <Suspense fallback={<TableSkeleton/>}>
+                <CategoryList/>
+            </Suspense>
         </div>
     )
 }
