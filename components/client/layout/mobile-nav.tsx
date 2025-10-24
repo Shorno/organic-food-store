@@ -55,23 +55,25 @@ export default function MobileNav({categories}: MobileNavProps) {
                             );
                         }
 
-                        // Render categories with subcategories as AccordionItem
                         return (
                             <Accordion type="single" collapsible className="w-full" key={category.name}>
                                 <AccordionItem value={`item-${idx}`}>
                                     <AccordionTrigger className="hover:no-underline">
-                                        <div className="flex items-center gap-3">
-                                            <div className="relative h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
-                                                <Image
-                                                    src={category.image}
-                                                    alt={category.name}
-                                                    fill
-                                                    className="object-cover"
-                                                />
+                                        <Link href={`/${category.slug}`} onClick={(e) => e.stopPropagation()}>
+                                            <div className="flex items-center gap-3">
+                                                <div className="relative h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
+                                                    <Image
+                                                        src={category.image}
+                                                        alt={category.name}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                </div>
+                                                <span className="font-medium">{category.name}</span>
                                             </div>
-                                            <span className="font-medium">{category.name}</span>
-                                        </div>
+                                        </Link>
                                     </AccordionTrigger>
+
                                     <AccordionContent>
                                         <div className="space-y-1 pl-11">
                                             {category.subCategory.map((sub) => (

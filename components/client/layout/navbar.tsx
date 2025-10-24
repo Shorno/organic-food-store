@@ -7,6 +7,7 @@ import UserButton from "@/components/client/profile/user-button";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import MobileNav from "@/components/client/layout/mobile-nav";
 import {CategoryWithSubcategories} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
+import Link from "next/link";
 
 interface NavbarProps {
     categories: CategoryWithSubcategories[]
@@ -36,9 +37,9 @@ export default function Navbar({categories}: NavbarProps) {
                 </Sheet>
 
                 {/* Logo */}
-                <div className="flex-shrink-0">
+                <Link href={"/"} className="flex-shrink-0">
                     <Logo/>
-                </div>
+                </Link>
 
                 {/* Desktop Search - Hidden on mobile/tablet, visible on lg+ */}
                 <InputGroup className={"hidden lg:flex flex-1 max-w-5xl h-10 rounded-full"}>
