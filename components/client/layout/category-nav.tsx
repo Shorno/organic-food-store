@@ -1,4 +1,4 @@
-
+"use client"
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -19,7 +19,7 @@ interface CategoryNavProps {
 }
 
 
-export default async function CategoryNav({categories}: CategoryNavProps) {
+export default function CategoryNav({categories}: CategoryNavProps) {
 
     return (
         <div className="hidden lg:block border-b bg-muted/30">
@@ -61,16 +61,23 @@ export default async function CategoryNav({categories}: CategoryNavProps) {
                                 return (
                                     <NavigationMenuItem key={category.name}>
                                         <NavigationMenuTrigger className="h-12 gap-2">
-                                            <div className="relative h-5 w-5 rounded-full overflow-hidden">
-                                                <Image
-                                                    src={category.image}
-                                                    alt={category.name}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                            {category.name}
+                                            <Link
+                                                href={`/${category.slug}`}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="flex items-center gap-2"
+                                            >
+                                                <div className="relative h-5 w-5 rounded-full overflow-hidden">
+                                                    <Image
+                                                        src={category.image}
+                                                        alt={category.name}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                </div>
+                                                {category.name}
+                                            </Link>
                                         </NavigationMenuTrigger>
+
                                         <NavigationMenuContent>
                                             <ul className="grid w-[500px] gap-3 p-2 md:w-[600px] md:grid-cols-2">
                                                 {category.subCategory.map((sub) => (
