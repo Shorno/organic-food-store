@@ -6,11 +6,17 @@ import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/
 import UserButton from "@/components/client/profile/user-button";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import MobileNav from "@/components/client/layout/mobile-nav";
+import {CategoryWithSubcategories} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
 
-export default function Navbar() {
+interface NavbarProps {
+    categories: CategoryWithSubcategories[]
+}
+
+export default function Navbar({categories}: NavbarProps) {
     return (
         <nav className="border-b">
-            <div className={"flex container mx-auto justify-start lg:justify-between items-center gap-2 sm:gap-4 h-14 lg:h-20 px-4 lg:p-0"}>
+            <div
+                className={"flex container mx-auto justify-start lg:justify-between items-center gap-2 sm:gap-4 h-14 lg:h-20 px-4 lg:p-0"}>
                 {/* Mobile/Tablet Menu Button - Hidden on desktop (lg) */}
                 <Sheet>
                     <SheetTrigger asChild>
@@ -25,7 +31,7 @@ export default function Navbar() {
                                 <Logo/>
                             </SheetTitle>
                         </SheetHeader>
-                        <MobileNav />
+                        <MobileNav categories={categories}/>
                     </SheetContent>
                 </Sheet>
 

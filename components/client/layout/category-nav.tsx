@@ -12,10 +12,14 @@ import { LayoutGrid } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
-import getCategoryWithSubcategory from "@/app/(client)/actions/get-category-with-subcategory";
+import {CategoryWithSubcategories} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
 
-export default async function CategoryNav() {
-    const categories = await getCategoryWithSubcategory()
+interface CategoryNavProps {
+    categories : CategoryWithSubcategories[]
+}
+
+
+export default async function CategoryNav({categories}: CategoryNavProps) {
 
     return (
         <div className="hidden lg:block border-b bg-muted/30">

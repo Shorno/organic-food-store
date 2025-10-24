@@ -1,4 +1,4 @@
-"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import {LayoutGrid } from "lucide-react"
@@ -10,22 +10,16 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import getCategoryWithSubcategory from "@/app/(client)/actions/get-category-with-subcategory";
-import {useEffect, useState} from "react";
 import {CategoryWithSubcategories} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
 
 
+interface MobileNavProps{
+    categories : CategoryWithSubcategories[]
+}
 
-export default function MobileNav() {
-    const [categories, setCategories] = useState<CategoryWithSubcategories[]>([]);
 
-    useEffect(() => {
-        async function fetchCategories() {
-            const data = await getCategoryWithSubcategory();
-            setCategories(data);
-        }
-        fetchCategories();
-    }, []);
+export default function MobileNav({categories}: MobileNavProps) {
+
 
     return (
         <ScrollArea className="h-full py-6">
