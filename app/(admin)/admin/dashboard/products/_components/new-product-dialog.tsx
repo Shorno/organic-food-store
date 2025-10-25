@@ -25,7 +25,7 @@ import {createProductSchema} from "@/lib/schemas/product.schema"
 import {Switch} from "@/components/ui/switch"
 import ImageUploader from "@/components/ImageUploader"
 import {generateSlug} from "@/utils/generate-slug"
-import {useTransition, useEffect, useState} from "react"
+import {useTransition, useEffect, useState, useMemo} from "react"
 import createProduct from "@/app/(admin)/admin/dashboard/products/actions/create-product"
 import {Loader} from "lucide-react"
 import {
@@ -47,19 +47,17 @@ export default function NewProductDialog() {
     const [open, setOpen] = React.useState(false)
     const [categories, setCategories] = useState<CategoryWithSubs[]>([])
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
-    const [subCategories, setSubCategories] = useState<SubCategory[]>([])
 
     useEffect(() => {
         getCategoriesForSelect().then(setCategories)
     }, [])
 
-    useEffect(() => {
+    const subCategories = useMemo(() => {
         if (selectedCategory) {
             const category = categories.find(c => c.id === selectedCategory)
-            setSubCategories(category?.subCategory || [])
-        } else {
-            setSubCategories([])
+            return category?.subCategory || []
         }
+        return []
     }, [selectedCategory, categories])
 
     const form = useForm({
@@ -67,7 +65,7 @@ export default function NewProductDialog() {
             name: "",
             slug: "",
             categoryId: 0,
-            subCategoryId: null as number | null,
+            subCategoryId: undefined as number | undefined,
             size: "",
             price: "",
             stockQuantity: 0,
@@ -75,22 +73,14 @@ export default function NewProductDialog() {
             inStock: true,
             isFeatured: false,
         },
-
+        validators: {
+            //@ts-ignore
+            onSubmit: createProductSchema,
+        },
         onSubmit: async ({value}) => {
             startTransition(async () => {
                 try {
-                    // Validate the form data
-                    const result = createProductSchema.safeParse(value)
-
-                    if (!result.success) {
-                        const errors = result.error.flatten()
-                        toast.error("Validation failed", {
-                            description: Object.values(errors.fieldErrors).flat()[0] || "Please check your inputs",
-                        })
-                        return
-                    }
-
-                    const createResult = await createProduct(result.data)
+                    const createResult = await createProduct(value)
                     if (!createResult.success) {
                         switch (createResult.status) {
                             case 400:
@@ -231,7 +221,6 @@ export default function NewProductDialog() {
                     </form.Field>
 
 
-
                     {/* Category and Subcategory Row */}
                     <div className="grid grid-cols-2 gap-4">
                         {/* Category */}
@@ -248,7 +237,7 @@ export default function NewProductDialog() {
                                                 const numValue = parseInt(value)
                                                 field.handleChange(numValue)
                                                 setSelectedCategory(numValue)
-                                                form.setFieldValue("subCategoryId", null)
+                                                form.setFieldValue("subCategoryId", undefined)
                                             }}
                                         >
                                             <SelectTrigger>
@@ -283,7 +272,7 @@ export default function NewProductDialog() {
                                         <Select
                                             value={field.state.value?.toString() || "none"}
                                             onValueChange={(value) => {
-                                                field.handleChange(value === "none" ? null : parseInt(value))
+                                                field.handleChange(value === "none" ? undefined : parseInt(value))
                                             }}
                                             disabled={!selectedCategory || subCategories.length === 0}
                                         >

@@ -20,10 +20,7 @@ export const createProductSchema = z.object({
         .int()
         .positive("Please select a valid category."),
     subCategoryId: z
-        .number()
-        .int()
-        .positive()
-        .nullable()
+        .union([z.number().int().positive(), z.undefined()])
         .optional(),
     size: z
         .string()
