@@ -74,7 +74,10 @@ export default async function updateProduct(
         return {
             success: true,
             status: 200,
-            data: updatedProduct[0],
+            data: {
+                ...updatedProduct[0],
+                subCategoryId: updatedProduct[0].subCategoryId ?? undefined,
+            },
             message: "Product updated successfully",
         }
     } catch (error) {

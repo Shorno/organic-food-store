@@ -60,7 +60,10 @@ export default async function createProduct(
         return {
             success: true,
             status: 201,
-            data: newProduct[0],
+            data: {
+                ...newProduct[0],
+                subCategoryId: newProduct[0].subCategoryId ?? undefined,
+            },
             message: "Product created successfully",
         }
     } catch (error) {
