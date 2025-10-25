@@ -7,7 +7,6 @@ export const product = pgTable("product", {
     id: serial("id").primaryKey(),
     name: varchar("name", {length: 150}).notNull(),
     slug: varchar("slug", {length: 150}).notNull().unique(),
-    description: text("description"),
     categoryId: integer("category_id")
         .notNull()
         .references(() => category.id, {onDelete: "cascade"}),
