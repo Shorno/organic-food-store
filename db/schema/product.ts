@@ -1,4 +1,4 @@
-import {integer, pgTable, serial, varchar, boolean, text, decimal} from "drizzle-orm/pg-core";
+import {integer, pgTable, serial, varchar, boolean, decimal} from "drizzle-orm/pg-core";
 import {timestamps} from "@/db/schema/columns.helpers";
 import {relations} from "drizzle-orm";
 import {category, subCategory} from "./category";
@@ -56,8 +56,16 @@ export const productImageRelations = relations(productImage, ({one}) => ({
     })
 }));
 
-// Type exports
 export type Product = typeof product.$inferSelect;
 export type ProductImage = typeof productImage.$inferSelect;
 export type NewProduct = typeof product.$inferInsert;
 export type NewProductImage = typeof productImage.$inferInsert;
+
+export interface ProductWithRelations extends Product {
+    category: {
+        name: string;
+    };
+    subCategory?: {
+        name: string;
+    } | null;
+}
