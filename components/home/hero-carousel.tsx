@@ -40,7 +40,7 @@ export default function HeroCarousel({ featuredImages }: HeroCarouselProps) {
     }, [featuredImages.length])
 
     return (
-        <div className="relative w-full h-[60vh] overflow-hidden bg-background">
+        <div className="relative w-full h-[40vh] md:h-[50vh] overflow-hidden bg-background">
             <div className="relative w-full h-full">
                 {featuredImages.map((slide, index) => (
                     <div

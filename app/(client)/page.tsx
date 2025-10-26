@@ -6,7 +6,7 @@ export default function HomePage() {
         <>
             <FeaturedImages/>
             <div className={"custom-container"}>
-                <div className="bg-gradient-to-b from-neutral-50 to-white px-6 py-16 md:px-12 md:py-24">
+                <div className="px-6 py-16 md:px-12 md:py-24">
                     <div className="mx-auto text-center">
                         <h1 className="text-4xl md:text-5xl font-serif font-light text-neutral-900 mb-4 text-balance">
                             Premium Natural Products

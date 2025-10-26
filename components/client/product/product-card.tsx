@@ -7,35 +7,48 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {ProductWithRelations} from "@/db/schema";
 import {toast} from "sonner";
+import {useCartActions, useCartItems} from "@/stote/cart-sotre";
 
 interface ProductCardProps {
     product: ProductWithRelations
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+    const items = useCartItems()
+    const {addItem} = useCartActions()
+
+
     const handleAddToCart = () => {
+        if (!product.inStock || product.stockQuantity === 0) {
+            toast.error("Out of stock");
+            return;
+        }
+
+        const cartItem = items.find(item => item.id === product.id);
+        if (cartItem && cartItem.quantity >= (product.stockQuantity ?? Infinity)) {
+            toast.warning("Maximum quantity in cart");
+            return;
+        }
+
+        addItem(product);
         toast.success("Added to cart", {
-            description: `${product.name} has been added to your cart.`,
-        })
+            description: `${product.name} has been added to your cart.`})
+
     }
+
+
 
     const handleBuyNow = () => {
         toast.success("Proceeding to checkout", {
             description: `Purchasing ${product.name} now.`,
         })
     }
+
     return (
         <Card className="group h-full flex flex-col py-0 overflow-hidden hover:shadow-lg transition-all duration-300">
             {/* Image Container */}
             <div className="relative w-full aspect-video bg-neutral-100 overflow-hidden">
                 {product.isFeatured && <Badge className="absolute top-3 right-3 z-10 bg-amber-500 text-white">Featured</Badge>}
-
-                {/* Stock Status */}
-                {!product.inStock && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
-                        <span className="text-white font-semibold text-lg">Out of Stock</span>
-                    </div>
-                )}
 
                 {/* Product Image */}
                 <Image
@@ -60,15 +73,6 @@ export function ProductCard({ product }: ProductCardProps) {
                     Size: <span className="font-medium text-neutral-700">{product.size}</span>
                 </p>
 
-                {/* Stock Info */}
-                <div className="mb-3">
-                    {product.inStock ? (
-                        <p className="text-xs text-green-600 font-medium">✓ In Stock ({product.stockQuantity} available)</p>
-                    ) : (
-                        <p className="text-xs text-red-600 font-medium">Out of Stock</p>
-                    )}
-                </div>
-
                 {/* Price */}
                 <div className="mb-3 mt-auto">
                     <p className="text-lg md:text-xl font-light text-neutral-900">
@@ -82,9 +86,9 @@ export function ProductCard({ product }: ProductCardProps) {
                     <Button
                         onClick={handleAddToCart}
                         disabled={!product.inStock}
-                        variant="default"
+                        variant="outline"
                         size="icon"
-                        className="bg-neutral-900 hover:bg-neutral-800 hover:scale-110 transition-all duration-300 disabled:hover:scale-100"
+                        className="hover:scale-110 transition-all duration-300 disabled:hover:scale-100"
                     >
                         <ShoppingCart size={16} />
                     </Button>
@@ -93,7 +97,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     <Button
                         onClick={handleBuyNow}
                         disabled={!product.inStock}
-                        className="flex-1 gap-2 bg-amber-500 hover:bg-amber-600 hover:scale-105 transition-all duration-300 disabled:hover:scale-100"
+                        className="flex-1 gap-2  hover:scale-105 transition-all duration-300 disabled:hover:scale-100"
                     >
                         <Zap size={16} />
                         Buy Now
