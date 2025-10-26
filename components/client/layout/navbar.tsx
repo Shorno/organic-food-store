@@ -1,13 +1,14 @@
 "use client"
 import Logo from "@/components/Logo";
 import {Button} from "@/components/ui/button";
-import {ShoppingCart, SearchIcon, Menu} from "lucide-react";
+import {SearchIcon, Menu} from "lucide-react";
 import {InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput} from "@/components/ui/input-group";
 import UserButton from "@/components/client/profile/user-button";
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import MobileNav from "@/components/client/layout/mobile-nav";
 import {CategoryWithSubcategories} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
 import Link from "next/link";
+import CartDrawer from "@/components/client/cart/cart-drawer";
 
 interface NavbarProps {
     categories: CategoryWithSubcategories[]
@@ -54,13 +55,7 @@ export default function Navbar({categories}: NavbarProps) {
 
                 {/* Right side buttons */}
                 <div className={"flex gap-4 ml-auto lg:ml-0"}>
-                    <Button variant="ghost" size="icon" className="relative">
-                        <ShoppingCart className="h-5 w-5"/>
-                        <span
-                            className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                            3
-                        </span>
-                    </Button>
+                    <CartDrawer/>
                     <UserButton/>
                 </div>
             </div>

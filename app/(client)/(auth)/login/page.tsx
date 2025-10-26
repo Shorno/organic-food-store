@@ -1,18 +1,11 @@
-"use client"
-import {authClient} from "@/lib/auth-client";
-import {Button} from "@/components/ui/button";
+import {LoginForm} from "@/components/login-form";
 
 export default function LoginPage() {
-    const handleLogin = async () => {
-        await authClient.signIn.social({
-            provider: "github",
-        })
-    }
     return (
-        <div className={"flex justify-center items-center min-h-[90vh]"}>
-            <Button onClick={handleLogin}>
-                Login with GitHub
-            </Button>
+        <div className="bg-muted flex min-h-[calc(100dvh-130px)] flex-col items-center justify-center p-6 md:p-10">
+            <div className="w-full max-w-sm md:max-w-4xl">
+                <LoginForm/>
+            </div>
         </div>
     )
 }

@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import {NavMain} from "@/components/nav-main"
-import {NavUser} from "@/components/nav-user"
+import {NavMain} from "@/components/dashboard/nav-main"
+import {NavUser} from "@/components/dashboard/nav-user"
 import {
     Sidebar,
     SidebarContent,
@@ -63,7 +63,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
                             asChild
                             className="data-[slot=sidebar-menu-button]:!p-1.5"
                         >
-                            <Link href="/">
+                            <Link href="/public">
                                 <Logo/>
                             </Link>
                         </SidebarMenuButton>
