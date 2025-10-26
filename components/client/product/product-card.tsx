@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import {ProductWithRelations} from "@/db/schema";
 import {toast} from "sonner";
 import {useCartActions, useCartItems} from "@/stote/cart-sotre";
+import {formatPrice} from "@/utils/currency";
 
 interface ProductCardProps {
     product: ProductWithRelations
@@ -76,13 +77,12 @@ export function ProductCard({ product }: ProductCardProps) {
                 {/* Price */}
                 <div className="mb-3 mt-auto">
                     <p className="text-lg md:text-xl font-light text-neutral-900">
-                        ৳{Number.parseFloat(product.price).toLocaleString()}
+                        {formatPrice(product.price)}
                     </p>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 mt-3">
-                    {/* Add to Cart Button - Icon Only */}
                     <Button
                         onClick={handleAddToCart}
                         disabled={!product.inStock}
@@ -93,7 +93,6 @@ export function ProductCard({ product }: ProductCardProps) {
                         <ShoppingCart size={16} />
                     </Button>
 
-                    {/* Buy Now Button - Full Text */}
                     <Button
                         onClick={handleBuyNow}
                         disabled={!product.inStock}
