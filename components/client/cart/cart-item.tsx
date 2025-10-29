@@ -4,13 +4,16 @@ import {Button} from "@/components/ui/button";
 import Image from "next/image";
 import {type CartItem, useCartActions} from "@/stote/cart-sotre";
 import {formatPrice} from "@/utils/currency";
+import {authClient} from "@/lib/auth-client";
 
 interface CartItemProps {
     item: CartItem;
 }
 
 export default function CartItem({item}: CartItemProps) {
-    const {increment, decrement, removeItem} = useCartActions()
+    const session = authClient.useSession();
+    const {increment, decrement, removeItem} = useCartActions();
+    const isAuthenticated = !!session.data?.user;
 
     return (
         <div
@@ -44,7 +47,7 @@ export default function CartItem({item}: CartItemProps) {
                 <div className="flex items-center gap-3">
                     <div className="flex items-center border border-gray-300 rounded-lg bg-gray-50">
                         <Button
-                            onClick={() => decrement(item.id)}
+                            onClick={() => decrement(item.id, isAuthenticated)}
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 hover:bg-gray-200 rounded-l-lg rounded-r-none"
@@ -59,7 +62,7 @@ export default function CartItem({item}: CartItemProps) {
                         </div>
 
                         <Button
-                            onClick={() => increment(item.id)}
+                            onClick={() => increment(item.id, isAuthenticated)}
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 hover:bg-gray-200 rounded-r-lg rounded-l-none"
@@ -72,7 +75,7 @@ export default function CartItem({item}: CartItemProps) {
                         variant="ghost"
                         size="sm"
                         className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.id, isAuthenticated)}
                     >
                         <Trash2 className="h-4 w-4"/>
                     </Button>

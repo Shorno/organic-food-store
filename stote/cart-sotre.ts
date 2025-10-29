@@ -1,6 +1,14 @@
 import {create} from "zustand";
 import {persist, createJSONStorage,} from "zustand/middleware";
 import {Product} from "@/db/schema";
+import {
+    addToCart,
+    updateCartItemQuantity,
+    removeFromCart,
+    clearCart as clearDbCart,
+    syncCartToDatabase,
+    getCartItems
+} from "@/app/actions/cart";
 
 export interface CartItem extends Product {
     quantity: number;
@@ -12,13 +20,16 @@ interface CartState {
     totalQuantity: number;
     totalPrice: number;
     isOpen?: boolean;
+    isSyncing: boolean;
     actions: {
-        addItem: (product: Product) => void;
+        addItem: (product: Product, isAuthenticated?: boolean) => Promise<void>;
         setIsOpen?: (isOpen: boolean) => void;
-        increment: (productId: number) => void
-        decrement: (productId: number) => void
-        removeItem: (productId: number) => void;
-        clearCart: () => void;
+        increment: (productId: number, isAuthenticated?: boolean) => Promise<void>;
+        decrement: (productId: number, isAuthenticated?: boolean) => Promise<void>;
+        removeItem: (productId: number, isAuthenticated?: boolean) => Promise<void>;
+        clearCart: (isAuthenticated?: boolean) => Promise<void>;
+        syncToDatabase: () => Promise<void>;
+        loadFromDatabase: () => Promise<void>;
     };
 }
 
@@ -38,13 +49,14 @@ function calculateSubtotal(price: number, quantity: number): number {
 
 const useCartStore = create<CartState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             items: [],
             totalQuantity: 0,
             totalPrice: 0,
             isOpen: false,
+            isSyncing: false,
             actions: {
-                addItem(product: Product) {
+                async addItem(product: Product, isAuthenticated = false) {
                     set((state) => {
                         const existingCartItemIndex = state.items.findIndex((existingCartItem) => existingCartItem.id === product.id);
                         let updatedCartItems: CartItem[];
@@ -83,14 +95,21 @@ const useCartStore = create<CartState>()(
                             totalQuantity,
                             isOpen: true,
                         }
-                    })
+                    });
+
+                    // Sync to database if authenticated
+                    if (isAuthenticated) {
+                        await addToCart(product.id, 1);
+                    }
                 },
-                increment(productId) {
+                async increment(productId, isAuthenticated = false) {
+                    let newQuantity = 0;
+
                     set((state) => {
                         const items = state.items.map((item) => {
                             if (item.id === productId) {
                                 const max = item.stockQuantity ?? Infinity;
-                                const newQuantity = Math.min(item.quantity + 1, max);
+                                newQuantity = Math.min(item.quantity + 1, max);
                                 return {
                                     ...item,
                                     quantity: newQuantity,
@@ -106,13 +125,20 @@ const useCartStore = create<CartState>()(
                             totalQuantity,
                             totalPrice,
                         }
-                    })
+                    });
+
+                    // Sync to database if authenticated
+                    if (isAuthenticated && newQuantity > 0) {
+                        await updateCartItemQuantity(productId, newQuantity);
+                    }
                 },
-                decrement(productId) {
+                async decrement(productId, isAuthenticated = false) {
+                    let newQuantity = 0;
+
                     set((state) => {
                         const items = state.items.map((item) => {
                             if (item.id === productId) {
-                                const newQuantity = Math.max(item.quantity - 1, 1);
+                                newQuantity = Math.max(item.quantity - 1, 1);
                                 return {
                                     ...item,
                                     quantity: newQuantity,
@@ -127,25 +153,90 @@ const useCartStore = create<CartState>()(
                             totalQuantity,
                             totalPrice
                         }
-                    })
+                    });
+
+                    // Sync to database if authenticated
+                    if (isAuthenticated && newQuantity > 0) {
+                        await updateCartItemQuantity(productId, newQuantity);
+                    }
                 },
-                removeItem(productId) {
+                async removeItem(productId, isAuthenticated = false) {
                     set((state) => {
                         const items = state.items.filter((item) => item.id !== productId);
                         const {totalQuantity, totalPrice} = calculateTotals(items);
                         return {items, totalQuantity, totalPrice};
                     });
+
+                    // Sync to database if authenticated
+                    if (isAuthenticated) {
+                        await removeFromCart(productId);
+                    }
                 },
                 setIsOpen(isOpen: boolean) {
                     set(() => ({isOpen}));
                 },
-                clearCart: () => {
+                async clearCart(isAuthenticated = false) {
                     set(() => ({
                         items: [],
                         totalQuantity: 0,
                         totalPrice: 0,
                         isOpen: false,
                     }));
+
+                    // Sync to database if authenticated
+                    if (isAuthenticated) {
+                        await clearDbCart();
+                    }
+                },
+                async syncToDatabase() {
+                    const state = get();
+                    if (state.isSyncing || state.items.length === 0) return;
+
+                    set({ isSyncing: true });
+
+                    try {
+                        const cartData = state.items.map(item => ({
+                            productId: item.id,
+                            quantity: item.quantity,
+                            priceAtAdd: item.price,
+                        }));
+
+                        await syncCartToDatabase(cartData);
+                    } catch (error) {
+                        console.error("Error syncing cart to database:", error);
+                    } finally {
+                        set({ isSyncing: false });
+                    }
+                },
+                async loadFromDatabase() {
+                    const state = get();
+                    if (state.isSyncing) return;
+
+                    set({ isSyncing: true });
+
+                    try {
+                        const result = await getCartItems();
+
+                        if (result.success && result.data) {
+                            const cartItems: CartItem[] = result.data.map((item: any) => ({
+                                ...item.product,
+                                quantity: item.quantity,
+                                subtotal: calculateSubtotal(Number(item.product.price), item.quantity),
+                            }));
+
+                            const {totalQuantity, totalPrice} = calculateTotals(cartItems);
+
+                            set({
+                                items: cartItems,
+                                totalQuantity,
+                                totalPrice,
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error loading cart from database:", error);
+                    } finally {
+                        set({ isSyncing: false });
+                    }
                 },
             }
         }),
@@ -178,3 +269,4 @@ export const useCartTotalQuantity = () => useCartStore((state) => state.totalQua
 export const useCartTotalPrice = () => useCartStore((state) => state.totalPrice);
 export const useCartActions = () => useCartStore((state) => state.actions);
 export const useCartIsOpen = () => useCartStore((state) => state.isOpen);
+export const useCartIsSyncing = () => useCartStore((state) => state.isSyncing);
