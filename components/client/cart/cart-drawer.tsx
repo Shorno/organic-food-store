@@ -3,15 +3,30 @@ import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose} 
 import {Button} from "@/components/ui/button";
 import {ShoppingCart} from "lucide-react";
 import Link from "next/link";
-import {useCartItems, useCartTotalPrice, useCartTotalQuantity} from "@/stote/cart-sotre";
+import {useCartActions, useCartIsOpen, useCartItems, useCartTotalPrice, useCartTotalQuantity} from "@/stote/cart-sotre";
 import CartItem from "@/components/client/cart/cart-item";
 import {formatPrice} from "@/utils/currency";
+import {authClient} from "@/lib/auth-client";
+import {useRouter} from "next/navigation";
 
 
 export default function CartDrawer() {
+    const session = authClient.useSession()
+    const {setIsOpen} = useCartActions()
+    const isCartOpen = useCartIsOpen()
+
+    const router = useRouter()
     const cartItems = useCartItems()
     const totalQuantity = useCartTotalQuantity()
     const subtotal = useCartTotalPrice()
+
+    const handleCheckoutClick = () => {
+        if (!session.data?.user) {
+            router.push('/login?redirect=/checkout');
+        } else {
+            router.push('/checkout');
+        }
+    }
 
 
     return (
@@ -67,13 +82,15 @@ export default function CartDrawer() {
                             <span className="font-bold">{formatPrice(subtotal)}</span>
                         </div>
 
-
-                        <Button
-                            className="w-full  py-6 rounded-full text-base"
-                            disabled={totalQuantity === 0}
-                        >
-                            CHECKOUT
-                        </Button>
+                        <SheetClose asChild>
+                            <Button
+                                onClick={handleCheckoutClick}
+                                className="w-full  py-6 rounded-full text-base"
+                                disabled={totalQuantity === 0}
+                            >
+                                CHECKOUT
+                            </Button>
+                        </SheetClose>
                     </div>
                 </div>
             </SheetContent>

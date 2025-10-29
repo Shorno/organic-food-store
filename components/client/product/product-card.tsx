@@ -9,14 +9,17 @@ import {ProductWithRelations} from "@/db/schema";
 import {toast} from "sonner";
 import {useCartActions, useCartItems} from "@/stote/cart-sotre";
 import {formatPrice} from "@/utils/currency";
+import {authClient} from "@/lib/auth-client";
 
 interface ProductCardProps {
     product: ProductWithRelations
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+    const session = authClient.useSession();
     const items = useCartItems()
     const {addItem} = useCartActions()
+    const isAuthenticated = !!session.data?.user;
 
 
     const handleAddToCart = () => {
@@ -31,7 +34,7 @@ export function ProductCard({ product }: ProductCardProps) {
             return;
         }
 
-        addItem(product);
+        addItem(product, isAuthenticated);
         toast.success("Added to cart", {
             description: `${product.name} has been added to your cart.`})
 
