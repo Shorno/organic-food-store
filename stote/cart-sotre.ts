@@ -157,7 +157,6 @@ const useCartStore = create<CartState>()(
                 totalQuantity: state.totalQuantity,
                 totalPrice: state.totalPrice,
                 isOpen: state.isOpen
-                // Don't persist actions
             }),
             version: 1,
             // Fixed onRehydrateStorage

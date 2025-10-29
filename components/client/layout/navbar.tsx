@@ -55,8 +55,8 @@ export default function Navbar({categories}: NavbarProps) {
 
                 {/* Right side buttons */}
                 <div className={"flex gap-4 ml-auto lg:ml-0"}>
-                    <CartDrawer/>
                     <UserButton/>
+                    <CartDrawer/>
                 </div>
             </div>
 

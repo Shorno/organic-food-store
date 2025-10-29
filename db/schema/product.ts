@@ -13,15 +13,14 @@ export const product = pgTable("product", {
     subCategoryId: integer("sub_category_id")
         .references(() => subCategory.id, {onDelete: "set null"}),
 
-    size: varchar("size", {length: 50}).notNull(), // "250g", "500ml", "1kg", etc.
+    size: varchar("size", {length: 50}).notNull(),
     price: decimal("price", {precision: 10, scale: 2}).notNull(),
 
     stockQuantity: integer("stock_quantity").default(0).notNull(),
 
-    // Images
-    image: varchar("image", {length: 255}).notNull(), // Main product image
+    image: varchar("image", {length: 255}).notNull(),
 
-    // Status flags
+
     inStock: boolean("in_stock").default(true).notNull(),
     isFeatured: boolean("is_featured").default(false).notNull(),
 

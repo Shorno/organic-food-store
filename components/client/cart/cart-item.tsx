@@ -36,9 +36,10 @@ export default function CartItem({item}: CartItemProps) {
             </div>
 
             <div className="flex-1 min-w-0 space-y-2">
-                <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
-                    {item.name}
+                <h3 className="text-sm font-semibold line-clamp-2">
+                    {item.name} <span className="text-muted-foreground font-normal">({item.size})</span>
                 </h3>
+
 
                 <div className="flex items-center gap-3">
                     <div className="flex items-center border border-gray-300 rounded-lg bg-gray-50">
