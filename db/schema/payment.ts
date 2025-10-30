@@ -6,7 +6,7 @@ export const paymentMethodEnum = pgEnum("payment_method", [
     "bkash",
     "nagad",
     "rocket",
-    "cash_on_delivery",
+    "cod",
 ]);
 
 export const paymentStatusEnum = pgEnum("payment_status", [

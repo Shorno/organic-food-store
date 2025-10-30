@@ -37,12 +37,11 @@ export const order = pgTable("order", {
     totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
 
     // Contact Info
+    customerFullName: varchar("customer_full_name", { length: 200 }).notNull(),
     customerEmail: varchar("customer_email", { length: 255 }).notNull(),
     customerPhone: varchar("customer_phone", { length: 20 }).notNull(),
 
     // Shipping Address (denormalized for historical record)
-    shippingFullName: varchar("shipping_full_name", { length: 200 }).notNull(),
-    shippingPhone: varchar("shipping_phone", { length: 20 }).notNull(),
     shippingAddressLine: varchar("shipping_address_line", { length: 255 }).notNull(),
     shippingCity: varchar("shipping_city", { length: 100 }).notNull(),
     shippingArea: varchar("shipping_area", { length: 100 }),

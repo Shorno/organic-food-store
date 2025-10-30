@@ -15,17 +15,17 @@ export default function CheckoutPage() {
     const handleValidSubmit = (shippingData: ShippingFormData) => {
         setIsProcessing(true)
 
-        // Prepare complete order data
         const orderData = {
             shipping: shippingData,
             items: cartItems,
         }
+        console.log(orderData)
 
         // Store in sessionStorage for confirmation page
         sessionStorage.setItem('checkoutData', JSON.stringify(orderData))
 
         // Navigate to confirmation page
-        router.push('/checkout/confirm')
+        // router.push('/checkout/confirm')
     }
 
     return (

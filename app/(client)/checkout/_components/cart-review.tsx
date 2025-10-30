@@ -12,9 +12,6 @@ interface CartReviewProps {
 export default function CartReview({ isProcessing = false }: CartReviewProps) {
     const cartItems = useCartItems()
     const subtotal = useCartTotalPrice()
-    const shipping = 50
-    const discount = 0
-    const total = subtotal + shipping - discount
 
     return (
         <Card className="rounded-sm flex flex-col">
@@ -69,23 +66,16 @@ export default function CartReview({ isProcessing = false }: CartReviewProps) {
                         <span className="font-medium">{formatPrice(subtotal)}</span>
                     </div>
 
-                    <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Shipping</span>
-                        <span className="font-medium">{formatPrice(shipping)}</span>
-                    </div>
+                    {/*<div className="flex items-center justify-between text-sm">*/}
+                    {/*    <span className="text-muted-foreground">Shipping</span>*/}
+                    {/*    <span className="font-medium">{formatPrice(shipping)}</span>*/}
+                    {/*</div>*/}
 
-                    {discount > 0 && (
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">Discount</span>
-                            <span className="font-medium text-green-600">
-                        -{formatPrice(discount)}
-                    </span>
-                        </div>
-                    )}
+
 
                     <div className="flex items-center justify-between text-base font-bold pt-3 border-t">
                         <span>Total</span>
-                        <span>{formatPrice(total)}</span>
+                        <span>{formatPrice(subtotal)}</span>
                     </div>
                 </div>
 
