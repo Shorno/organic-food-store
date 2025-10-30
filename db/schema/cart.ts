@@ -7,7 +7,6 @@ import { relations } from "drizzle-orm";
 export const cart = pgTable("cart", {
     id: serial("id").primaryKey(),
     userId: varchar("user_id", { length: 255 }),
-    sessionId: varchar("session_id", { length: 255 }),
     expiresAt: timestamp("expires_at"),
     ...timestamps
 });
@@ -25,7 +24,6 @@ export const cartItem = pgTable("cart_item", {
     ...timestamps
 });
 
-// Relations
 export const cartRelations = relations(cart, ({ many }) => ({
     items: many(cartItem),
 }));

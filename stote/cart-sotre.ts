@@ -218,7 +218,7 @@ const useCartStore = create<CartState>()(
                         const result = await getCartItems();
 
                         if (result.success && result.data) {
-                            const cartItems: CartItem[] = result.data.map((item: any) => ({
+                            const cartItems: CartItem[] = result.data.map((item) => ({
                                 ...item.product,
                                 quantity: item.quantity,
                                 subtotal: calculateSubtotal(Number(item.product.price), item.quantity),
@@ -269,4 +269,3 @@ export const useCartTotalQuantity = () => useCartStore((state) => state.totalQua
 export const useCartTotalPrice = () => useCartStore((state) => state.totalPrice);
 export const useCartActions = () => useCartStore((state) => state.actions);
 export const useCartIsOpen = () => useCartStore((state) => state.isOpen);
-export const useCartIsSyncing = () => useCartStore((state) => state.isSyncing);
