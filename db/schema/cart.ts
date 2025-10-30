@@ -25,7 +25,6 @@ export const cartItem = pgTable("cart_item", {
     ...timestamps
 });
 
-// Relations
 export const cartRelations = relations(cart, ({ many }) => ({
     items: many(cartItem),
 }));
