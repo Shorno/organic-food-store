@@ -40,8 +40,14 @@ export default function CheckoutPage() {
                     description: `Order number: ${result.orderNumber}`,
                 })
 
-                // Navigate to confirmation page with order ID
-                router.push(`/checkout/confirm?orderId=${result.orderId}`)
+                // Navigate based on payment type
+                if (shippingData.paymentType === "cod") {
+                    // COD: Go directly to confirmation page
+                    router.push(`/checkout/confirm?orderId=${result.orderId}`)
+                } else {
+                    // Online Payment: Go to payment gateway
+                    router.push(`/checkout/payment?orderId=${result.orderId}`)
+                }
             } else {
                 // Show error message
                 toast.error("Failed to place order", {
