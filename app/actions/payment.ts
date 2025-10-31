@@ -10,9 +10,9 @@ const SSLCOMMERZ_CONFIG = {
     storeId: process.env.STORE_ID!,
     storePassword: process.env.STORE_PASSWORD!,
     isLive: false, // Set to true for production
-    successUrl: `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/checkout/payment/success`,
-    failUrl: `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/checkout/payment/failed`,
-    cancelUrl: `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/checkout/payment/failed`,
+    successUrl: `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/api/payment/success`,
+    failUrl: `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/api/payment/fail`,
+    cancelUrl: `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/api/payment/cancel`,
     ipnUrl: `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/api/payment/ipn`,
 }
 
