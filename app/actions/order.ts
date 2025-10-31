@@ -15,6 +15,7 @@ function generateOrderNumber(): string {
 }
 
 export async function createOrder(data: CreateOrderData): Promise<OrderResponse> {
+    //remove ssl
     try {
         const session = await auth.api.getSession({
             headers: await headers()
