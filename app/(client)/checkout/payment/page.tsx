@@ -1,12 +1,12 @@
 import {notFound} from "next/navigation"
-import {Package, MapPin, ArrowRight} from "lucide-react"
+import {Package, MapPin} from "lucide-react"
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
-import {Button} from "@/components/ui/button"
 import {Separator} from "@/components/ui/separator"
 import {Badge} from "@/components/ui/badge"
 import {getOrderById} from "@/app/actions/order"
 import {formatPrice} from "@/utils/currency"
 import Image from "next/image"
+import PaymentButton from "@/app/(client)/checkout/payment/_components/payment-button";
 
 interface PaymentPageProps {
     searchParams: Promise<{ orderId?: string }>
@@ -34,7 +34,6 @@ export default async function PaymentPage({searchParams}: PaymentPageProps) {
     return (
         <div className="py-8">
             <div className="container mx-auto px-4 max-w-xl">
-                {/* Header */}
                 <div className="text-center mb-6">
                     <h1 className="text-2xl font-bold mb-1">Complete Your Payment</h1>
                     <p className="text-sm text-muted-foreground">
@@ -42,7 +41,6 @@ export default async function PaymentPage({searchParams}: PaymentPageProps) {
                     </p>
                 </div>
 
-                {/* Order Summary Card */}
                 <Card className="mb-4">
                     <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
@@ -53,7 +51,6 @@ export default async function PaymentPage({searchParams}: PaymentPageProps) {
                         </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {/* Order Items - Compact Design */}
                         <div className="space-y-2">
                             <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                                 <Package className="h-4 w-4"/>
@@ -135,15 +132,7 @@ export default async function PaymentPage({searchParams}: PaymentPageProps) {
 
                 {/* Action Buttons */}
                 <div className="space-y-3">
-                    <Button
-                        size="lg"
-                        className="w-full"
-
-                    >
-                        Proceed to Payment
-                        <ArrowRight className="h-4 w-4 ml-2"/>
-                    </Button>
-
+                    <PaymentButton orderId={id}/>
                     <p className="text-xs text-center text-muted-foreground">
                         By proceeding, you agree to our terms and conditions.
                         Your payment is secured with SSL encryption.
