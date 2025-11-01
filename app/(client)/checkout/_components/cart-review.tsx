@@ -66,20 +66,12 @@ export default function CartReview({ isProcessing = false }: CartReviewProps) {
                         <span className="font-medium">{formatPrice(subtotal)}</span>
                     </div>
 
-                    {/*<div className="flex items-center justify-between text-sm">*/}
-                    {/*    <span className="text-muted-foreground">Shipping</span>*/}
-                    {/*    <span className="font-medium">{formatPrice(shipping)}</span>*/}
-                    {/*</div>*/}
-
-
-
                     <div className="flex items-center justify-between text-base font-bold pt-3 border-t">
                         <span>Total</span>
                         <span>{formatPrice(subtotal)}</span>
                     </div>
                 </div>
 
-                {/* Confirm Order Button */}
                 <Button
                     type="submit"
                     form="shipping-form"
