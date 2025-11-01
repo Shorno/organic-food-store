@@ -1,82 +1,73 @@
 "use client"
 
-import {useEffect, useState} from "react"
-import {useRouter, useSearchParams} from "next/navigation"
+import {useSearchParams, useRouter} from "next/navigation"
+import {useQuery} from "@tanstack/react-query"
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card"
 import {Button} from "@/components/ui/button"
-import {CheckCircle, Loader2, Package, AlertCircle} from "lucide-react"
+import {CheckCircle, Loader2, Package, AlertCircle, Clock} from "lucide-react"
 import Link from "next/link"
-import {verifyPayment} from "@/app/actions/payment"
+import {getOrderStatus, OrderStatusResponse} from "@/app/(client)/actions/get-order-status"
 import {formatPrice} from "@/utils/currency"
 
 export default function PaymentSuccessPage() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [isVerifying, setIsVerifying] = useState(true)
-    const [orderDetails, setOrderDetails] = useState<any>(null)
-    const [error, setError] = useState<string | null>(null)
+    const orderId = searchParams.get("orderId")
 
-    useEffect(() => {
-        // Get all parameters from SSLCommerz redirect
-        const valId = searchParams.get("val_id")
-        const tranId = searchParams.get("tran_id")
-        const orderId = searchParams.get("value_a")
-
-        // Log all parameters for debugging
-        const allParams = Object.fromEntries(searchParams.entries())
-        console.log("All URL parameters:", allParams)
-
-        // Check if we have any payment parameters
-        if (!valId && !tranId && !orderId) {
-            console.error("No payment parameters found in URL")
-            setError("No payment information received. The payment gateway did not return the expected data.")
-            setIsVerifying(false)
-            return
-        }
-
-        // If we have val_id, verify the payment
-        if (valId) {
-            console.log("Verifying payment with val_id:", valId)
-            verifyPaymentStatus(valId)
-        } else if (orderId) {
-            // Fallback: if we only have orderId but no val_id (sandbox issue)
-            console.log("No val_id found, but have orderId:", orderId)
-            setError("Payment verification ID missing. This may be a sandbox environment issue.")
-            setIsVerifying(false)
-        } else {
-            setError("Payment verification failed. Missing required parameters.")
-            setIsVerifying(false)
-        }
-    }, [searchParams])
-
-    const verifyPaymentStatus = async (valId: string) => {
-        try {
-            console.log("Calling verifyPayment server action...")
-            const result = await verifyPayment(valId)
-            console.log("Verification result:", result)
-
-            if (result.success && result.order) {
-                setOrderDetails(result.order)
-            } else {
-                setError(result.error || "Payment verification failed")
+    const {data, isLoading, error} = useQuery<OrderStatusResponse>({
+        queryKey: ["order-status", orderId],
+        queryFn: () => getOrderStatus(Number(orderId)),
+        enabled: !!orderId,
+        refetchInterval: (data) => {
+            const responseData = data.state.data
+            if (responseData?.success && responseData.order.status === "confirmed" && responseData.payment?.status === "completed") {
+                return false
             }
-        } catch (err) {
-            console.error("Verification error:", err)
-            setError("Failed to verify payment: " + (err instanceof Error ? err.message : "Unknown error"))
-        } finally {
-            setIsVerifying(false)
-        }
+            return 2000
+        },
+        refetchIntervalInBackground: false,
+        retry: 3,
+    })
+
+
+
+    if (!orderId) {
+        return (
+            <div className="flex items-center justify-center p-4">
+                <Card className="max-w-md w-full">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-destructive">
+                            <AlertCircle className="h-5 w-5"/>
+                            Missing Order Information
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <p className="text-sm text-muted-foreground">
+                            No order ID was provided. Please check your orders page.
+                        </p>
+                        <div className="flex flex-col gap-2">
+                            <Button onClick={() => router.push("/account/orders")} className="w-full">
+                                View My Orders
+                            </Button>
+                            <Button onClick={() => router.push("/")} variant="outline" className="w-full">
+                                Back to Home
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        )
     }
 
-    if (isVerifying) {
+    if (isLoading || !data) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="flex items-center justify-center p-4">
                 <Card className="max-w-md w-full">
                     <CardContent className="pt-6">
                         <div className="text-center py-8">
                             <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-primary"/>
                             <p className="text-sm text-muted-foreground">
-                                Verifying your payment...
+                                Processing your payment...
                             </p>
                             <p className="text-xs text-muted-foreground mt-2">
                                 Please wait while we confirm your transaction
@@ -88,9 +79,10 @@ export default function PaymentSuccessPage() {
         )
     }
 
-    if (error) {
+    if (error || (data && !data.success)) {
+        const message = data && !data.success ? data.error : "Failed to load order information"
         return (
-            <div className="min-h-screen flex items-center justify-center p-4">
+            <div className="flex items-center justify-center p-4">
                 <Card className="max-w-md w-full">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-destructive">
@@ -100,31 +92,26 @@ export default function PaymentSuccessPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-                            <p className="text-sm text-destructive">{error}</p>
+                            <p className="text-sm text-destructive">
+                                {message || "Failed to load order information"}
+                            </p>
                         </div>
 
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                             <p className="text-sm text-yellow-800 font-medium mb-2">
-                                Testing in Sandbox Mode?
+                                Payment May Still Be Processing
                             </p>
                             <p className="text-xs text-yellow-700">
-                                SSLCommerz sandbox may not redirect properly to localhost. Your payment might still be
-                                recorded. Check your orders page.
+                                If you completed the payment, it may take a few moments to reflect.
+                                Please check your orders page.
                             </p>
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <Button
-                                onClick={() => router.push("/account/orders")}
-                                className="w-full"
-                            >
+                            <Button onClick={() => router.push("/account/orders")} className="w-full">
                                 View My Orders
                             </Button>
-                            <Button
-                                onClick={() => router.push("/")}
-                                variant="outline"
-                                className="w-full"
-                            >
+                            <Button onClick={() => router.push("/")} variant="outline" className="w-full">
                                 Back to Home
                             </Button>
                         </div>
@@ -134,8 +121,39 @@ export default function PaymentSuccessPage() {
         )
     }
 
+    const {order: orderData, payment: paymentData} = data
+
+    if (orderData.status !== "confirmed" || paymentData?.status !== "completed") {
+        return (
+            <div className="flex items-center justify-center p-4">
+                <Card className="max-w-md w-full">
+                    <CardContent className="pt-6">
+                        <div className="text-center py-8 space-y-4">
+                            <Clock className="h-12 w-12 mx-auto text-amber-500"/>
+                            <div>
+                                <p className="text-sm font-medium mb-1">
+                                    Order #{orderData.orderNumber}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    Payment Status: <span
+                                    className="capitalize">{paymentData?.status || "pending"}</span>
+                                </p>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Waiting for payment confirmation...
+                            </p>
+                            <div className="mt-4">
+                                <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground"/>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+
     return (
-        <div className="min-h-screen py-8 px-4">
+        <div className="py-8 px-4">
             <div className="max-w-2xl mx-auto space-y-6">
                 {/* Success Card */}
                 <Card className="border-green-200 bg-green-50/50">
@@ -158,63 +176,90 @@ export default function PaymentSuccessPage() {
                 </Card>
 
                 {/* Order Details */}
-                {orderDetails && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Order Summary</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <p className="text-muted-foreground">Order Number</p>
-                                    <p className="font-medium">{orderDetails.orderNumber}</p>
-                                </div>
-                                <div>
-                                    <p className="text-muted-foreground">Total Amount</p>
-                                    <p className="font-medium text-lg">
-                                        {formatPrice(parseFloat(orderDetails.totalAmount))}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Order Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p className="text-muted-foreground">Order Number</p>
+                                <p className="font-medium">{orderData.orderNumber}</p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Total Amount</p>
+                                <p className="font-medium text-lg">
+                                    {formatPrice(parseFloat(orderData.totalAmount))}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Payment Method</p>
+                                <p className="font-medium capitalize">
+                                    {paymentData?.paymentMethod === "cod"
+                                        ? "Cash on Delivery"
+                                        : paymentData?.paymentMethod || "N/A"}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-muted-foreground">Status</p>
+                                <p className="font-medium text-green-600 capitalize">
+                                    {paymentData?.status || "N/A"}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Pricing Breakdown */}
+                        <div className="pt-4 border-t space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Subtotal</span>
+                                <span>{formatPrice(parseFloat(orderData.subtotal))}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Shipping</span>
+                                <span>{formatPrice(parseFloat(orderData.shippingAmount))}</span>
+                            </div>
+                            <div className="flex justify-between font-medium text-base pt-2 border-t">
+                                <span>Total</span>
+                                <span>{formatPrice(parseFloat(orderData.totalAmount))}</span>
+                            </div>
+                        </div>
+
+                        {/* Shipping Info */}
+                        <div className="pt-4 border-t space-y-3">
+                            <div>
+                                <p className="text-sm font-medium mb-2">Shipping Address</p>
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                    <p className="font-medium text-foreground">{orderData.customerFullName}</p>
+                                    <p>{orderData.shippingAddressLine}</p>
+                                    <p>
+                                        {orderData.shippingArea && `${orderData.shippingArea}, `}
+                                        {orderData.shippingCity} {orderData.shippingPostalCode}
                                     </p>
-                                </div>
-                                <div>
-                                    <p className="text-muted-foreground">Payment Method</p>
-                                    <p className="font-medium">Online Payment</p>
-                                </div>
-                                <div>
-                                    <p className="text-muted-foreground">Status</p>
-                                    <p className="font-medium text-green-600">Paid</p>
+                                    <p>{orderData.shippingCountry}</p>
                                 </div>
                             </div>
 
-                            <div className="pt-4 border-t space-y-3">
+                            <div className="pt-3 border-t">
                                 <p className="text-sm text-muted-foreground">
-                                    A confirmation email has been sent to <strong>{orderDetails.customerEmail}</strong>
+                                    A confirmation email has been sent to{" "}
+                                    <strong className="text-foreground">{orderData.customerEmail}</strong>
                                 </p>
-                                <p className="text-sm text-muted-foreground">
-                                    You can track your order status in your orders page.
+                                <p className="text-sm text-muted-foreground mt-2">
+                                    Contact: <strong className="text-foreground">{orderData.customerPhone}</strong>
                                 </p>
                             </div>
-                        </CardContent>
-                    </Card>
-                )}
+                        </div>
+                    </CardContent>
+                </Card>
 
-                {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <Button
-                        asChild
-                        className="flex-1"
-                        size="lg"
-                    >
-                        <Link href={orderDetails ? `/account/orders/${orderDetails.id}` : "/account/orders"}>
+                    <Button asChild className="flex-1" size="lg">
+                        <Link href={`/account/orders/${orderData.id}`}>
                             <Package className="h-4 w-4 mr-2"/>
                             View Order Details
                         </Link>
                     </Button>
-                    <Button
-                        asChild
-                        variant="outline"
-                        className="flex-1"
-                        size="lg"
-                    >
+                    <Button asChild variant="outline" className="flex-1" size="lg">
                         <Link href="/">
                             Continue Shopping
                         </Link>

@@ -49,3 +49,5 @@ export const payment = pgTable("payment", {
     failedAt: timestamp("failed_at"),
     ...timestamps
 });
+
+export type Payment = typeof payment.$inferSelect;
