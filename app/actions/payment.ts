@@ -169,7 +169,27 @@ export async function initiatePayment(orderId: number): Promise<PaymentResponse>
             error: "Failed to initiate payment. Please try again.",
         }
     }
+}
 
+export async function verifyWithSSLCommerz(valId: string) {
+    const apiUrl = SSLCOMMERZ_CONFIG.isLive
+        ? "https://securepay.sslcommerz.com/validator/api/validationserverAPI.php"
+        : "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php"
+
+    const validationParams = new URLSearchParams({
+        val_id: valId,
+        store_id: SSLCOMMERZ_CONFIG.storeId,
+        store_passwd: SSLCOMMERZ_CONFIG.storePassword,
+        format: "json",
+    })
+
+    const response = await fetch(`${apiUrl}?${validationParams.toString()}`)
+
+    if (!response.ok) {
+        throw new Error(`SSLCommerz API error: ${response.status}`)
+    }
+
+    return await response.json()
 }
 
 export async function verifyPayment(valId: string) {
@@ -183,73 +203,37 @@ export async function verifyPayment(valId: string) {
             }
         }
 
-        // Validate payment with SSLCommerz using val_id
-        const apiUrl = SSLCOMMERZ_CONFIG.isLive
-            ? "https://securepay.sslcommerz.com/validator/api/validationserverAPI.php"
-            : "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php"
+        // Just verify, don't update
+        const result = await verifyWithSSLCommerz(valId)
 
-        const validationParams = new URLSearchParams({
-            val_id: valId,
-            store_id: SSLCOMMERZ_CONFIG.storeId,
-            store_passwd: SSLCOMMERZ_CONFIG.storePassword,
-            format: "json",
-        })
-
-
-        const response = await fetch(`${apiUrl}?${validationParams.toString()}`)
-
-        if (!response.ok) {
-            console.error("SSLCommerz validation API error:", response.status, response.statusText)
-            return {
-                success: false,
-                error: "Payment validation API failed"
-            }
-        }
-
-        const result = await response.json()
-
-        console.log("SSLCommerz validation response:", result)
+        console.log("Manual verification:", result)
 
         if (result.status === "VALID" || result.status === "VALIDATED") {
             const orderId = parseInt(result.value_a)
-            const tranId = result.tran_id
 
-            // Update order and payment status
-            await db.transaction(async (tx) => {
-                await tx
-                    .update(order)
-                    .set({
-                        status: "confirmed",
-                        confirmedAt: new Date(),
-                    })
-                    .where(eq(order.id, orderId))
-
-                await tx
-                    .update(payment)
-                    .set({
-                        status: "completed",
-                        completedAt: new Date(),
-                        paymentProvider: tranId,
-                    })
-                    .where(eq(payment.orderId, orderId))
-            })
-
-            // Get updated order
+            // Get current order status
             const [orderData] = await db
                 .select()
                 .from(order)
-                .where(eq(order.id, orderId))
+                .where(
+                    and(
+                        eq(order.id, orderId),
+                        eq(order.userId, session.user.id)
+                    )
+                )
                 .limit(1)
 
             return {
                 success: true,
+                verified: true,
                 order: orderData,
+                message: "Payment verified by SSLCommerz"
             }
         } else {
-            console.error("Payment validation failed:", result)
             return {
                 success: false,
-                error: result.error || "Payment validation failed",
+                verified: false,
+                error: result.error || "Payment verification failed",
             }
         }
     } catch (error) {
