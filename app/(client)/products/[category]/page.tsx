@@ -4,6 +4,10 @@ import { ProductsGrid } from "@/components/client/product/products-grid"
 import { ProductsFilter } from "@/components/client/product/products-filter"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getCategoryBySlug } from "@/app/(client)/actions/get-category-by-slug"
+import getCategoryWithSubcategory from "@/app/(client)/actions/get-category-with-subcategory"
+
+
+export const revalidate = 3600
 
 interface CategoryProductsPageProps {
     params: Promise<{ category: string }>
@@ -15,6 +19,14 @@ interface CategoryProductsPageProps {
         inStock?: string
         search?: string
     }>
+}
+
+export async function generateStaticParams() {
+    const categories = await getCategoryWithSubcategory()
+
+    return categories.map((category) => ({
+        category: category.slug,
+    }))
 }
 
 export default async function CategoryProductsPage({ params, searchParams }: CategoryProductsPageProps) {
