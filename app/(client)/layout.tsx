@@ -17,9 +17,7 @@ export default async function ClientLayout({
             <Navbar categories={categories}/>
             <CategoryNav categories={categories}/>
             <div>
-                <Providers>
-                    {children}
-                </Providers>
+                {children}
             </div>
         </>
     )
