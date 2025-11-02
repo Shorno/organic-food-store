@@ -51,8 +51,8 @@ export function ProductCard({ product }: ProductCardProps) {
     return (
         <Card className="group h-full flex flex-col py-0 overflow-hidden hover:shadow-lg transition-all duration-300">
             {/* Image Container */}
-            <div className="relative w-full aspect-video bg-neutral-100 overflow-hidden">
-                {product.isFeatured && <Badge className="absolute top-3 right-3 z-10 bg-amber-500 text-white">Featured</Badge>}
+            <div className="relative w-full aspect-video bg-muted overflow-hidden">
+                {product.isFeatured && <Badge className="absolute top-3 right-3 z-10">Featured</Badge>}
 
                 {/* Product Image */}
                 <Image
@@ -67,19 +67,19 @@ export function ProductCard({ product }: ProductCardProps) {
             {/* Content Container */}
             <CardContent className="flex flex-col flex-grow p-3 md:p-4">
                 {/* Category */}
-                <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-1">{product.category.name}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide mb-1 opacity-80">{product.category.name}</p>
 
                 {/* Product Name */}
-                <h3 className="text-sm md:text-base font-semibold text-neutral-900 mb-1 line-clamp-2">{product.name}</h3>
+                <h3 className="text-sm md:text-base font-semibold mb-1 line-clamp-2">{product.name}</h3>
 
                 {/* Size */}
-                <p className="text-sm text-neutral-500 mb-2">
-                    Size: <span className="font-medium text-neutral-700">{product.size}</span>
+                <p className="text-sm mb-2 opacity-60">
+                    Size: <span className="font-medium opacity-100">{product.size}</span>
                 </p>
 
                 {/* Price */}
                 <div className="mb-3 mt-auto">
-                    <p className="text-lg md:text-xl font-light text-neutral-900">
+                    <p className="text-lg md:text-xl font-light">
                         {formatPrice(product.price)}
                     </p>
                 </div>
@@ -99,7 +99,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     <Button
                         onClick={handleBuyNow}
                         disabled={!product.inStock}
-                        className="flex-1 gap-2  hover:scale-105 transition-all duration-300 disabled:hover:scale-100"
+                        className="flex-1 gap-2 hover:scale-105 transition-all duration-300 disabled:hover:scale-100"
                     >
                         <Zap size={16} />
                         Buy Now

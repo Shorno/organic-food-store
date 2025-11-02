@@ -2,7 +2,6 @@ import Navbar from "@/components/client/layout/navbar";
 import CategoryNav from "@/components/client/layout/category-nav";
 import getCategoryWithSubcategory from "@/app/(client)/actions/get-category-with-subcategory";
 import CartSync from "@/components/client/cart/cart-sync";
-import Providers from "@/app/providers";
 
 export default async function ClientLayout({
                                                children,
@@ -17,9 +16,7 @@ export default async function ClientLayout({
             <Navbar categories={categories}/>
             <CategoryNav categories={categories}/>
             <div>
-                <Providers>
-                    {children}
-                </Providers>
+                {children}
             </div>
         </>
     )

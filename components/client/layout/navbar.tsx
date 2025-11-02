@@ -9,12 +9,14 @@ import MobileNav from "@/components/client/layout/mobile-nav";
 import {CategoryWithSubcategories} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
 import Link from "next/link";
 import CartDrawer from "@/components/client/cart/cart-drawer";
+import {ModeToggle} from "@/components/mode-toggle";
 
 interface NavbarProps {
     categories: CategoryWithSubcategories[]
 }
 
 export default function Navbar({categories}: NavbarProps) {
+
     return (
         <nav className="border-b">
             <div
@@ -54,7 +56,8 @@ export default function Navbar({categories}: NavbarProps) {
                 </InputGroup>
 
                 {/* Right side buttons */}
-                <div className={"flex gap-4 ml-auto lg:ml-0"}>
+                <div className={"flex justify-center items-center gap-4 ml-auto lg:ml-0"}>
+                    <ModeToggle/>
                     <UserButton/>
                     <CartDrawer/>
                 </div>

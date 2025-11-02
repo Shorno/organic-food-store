@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 import {Poppins} from "next/font/google";
 import "./globals.css";
-import {Toaster} from "@/components/ui/sonner";
+import Providers from "@/app/providers";
 
 const poppins = Poppins({
     variable: "--font-poppins",
@@ -24,8 +24,9 @@ export default function RootLayout({
         <body
             className={`${poppins.className} antialiased`}
         >
-        <Toaster  richColors position={"top-right"}/>
-        {children}
+        <Providers>
+            {children}
+        </Providers>
         </body>
         </html>
     );

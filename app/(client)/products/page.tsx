@@ -23,10 +23,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <div className="px-4 md:px-6">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl md:text-4xl font-serif font-light text-neutral-900 mb-2">
+                    <h1 className="text-3xl md:text-4xl font-serif font-light mb-2">
                         Our Products
                     </h1>
-                    <p className="text-neutral-600">
+                    <p className="opacity-60">
                         Browse our premium selection of organic foods
                     </p>
                 </div>

@@ -3,7 +3,7 @@ import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose} 
 import {Button} from "@/components/ui/button";
 import {ShoppingCart} from "lucide-react";
 import Link from "next/link";
-import {useCartActions, useCartIsOpen, useCartItems, useCartTotalPrice, useCartTotalQuantity} from "@/stote/cart-sotre";
+import {useCartItems, useCartTotalPrice, useCartTotalQuantity} from "@/stote/cart-sotre";
 import CartItem from "@/components/client/cart/cart-item";
 import {formatPrice} from "@/utils/currency";
 import {authClient} from "@/lib/auth-client";
@@ -12,8 +12,6 @@ import {useRouter} from "next/navigation";
 
 export default function CartDrawer() {
     const session = authClient.useSession()
-    const {setIsOpen} = useCartActions()
-    const isCartOpen = useCartIsOpen()
 
     const router = useRouter()
     const cartItems = useCartItems()
@@ -43,7 +41,7 @@ export default function CartDrawer() {
                 </Button>
             </SheetTrigger>
 
-            <SheetContent side="right" className="w-full  sm:max-w-md p-0 flex flex-col">
+            <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col">
                 {/* Header */}
                 <SheetHeader className="border-b px-6 py-4">
                     <div className="flex items-center justify-between">
@@ -52,7 +50,7 @@ export default function CartDrawer() {
                 </SheetHeader>
 
                 {/* Cart Content */}
-                <div className="flex-1 overflow-y-auto ">
+                <div className="flex-1 overflow-y-auto">
                     {totalQuantity === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12">
                             <h3 className="text-xl font-medium mb-6">Your cart is empty</h3>
@@ -61,12 +59,12 @@ export default function CartDrawer() {
                                     className="px-8 rounded-full"
                                     asChild
                                 >
-                                    <Link href="/shop">CONTINUE SHOPPING</Link>
+                                    <Link href="/">CONTINUE SHOPPING</Link>
                                 </Button>
                             </SheetClose>
                         </div>
                     ) : (
-                        <div className={"overflow-auto"}>
+                        <div className="overflow-auto">
                             {cartItems.map((item, index) => (
                                 <CartItem item={item} key={`${item.id}-${index}`}/>
                             ))}
@@ -75,7 +73,7 @@ export default function CartDrawer() {
                 </div>
 
                 {/* Footer */}
-                <div className="border-t px-6 py-4 bg-background">
+                <div className="border-t px-6 py-4">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between text-lg">
                             <span className="font-medium">SUBTOTAL</span>
@@ -85,7 +83,7 @@ export default function CartDrawer() {
                         <SheetClose asChild>
                             <Button
                                 onClick={handleCheckoutClick}
-                                className="w-full  py-6 rounded-full text-base"
+                                className="w-full py-6 rounded-full text-base"
                                 disabled={totalQuantity === 0}
                             >
                                 CHECKOUT

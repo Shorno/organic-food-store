@@ -24,15 +24,15 @@ interface OrderCardProps {
     order: Order
 }
 
-const statusColors = {
-    pending: "bg-yellow-100 text-yellow-800",
-    confirmed: "bg-blue-100 text-blue-800",
-    processing: "bg-purple-100 text-purple-800",
-    shipped: "bg-indigo-100 text-indigo-800",
-    delivered: "bg-green-100 text-green-800",
-    cancelled: "bg-red-100 text-red-800",
-    refunded: "bg-gray-100 text-gray-800",
-}
+const statusVariants = {
+    pending: "secondary",
+    confirmed: "default",
+    processing: "default",
+    shipped: "default",
+    delivered: "default",
+    cancelled: "destructive",
+    refunded: "outline",
+} as const
 
 export default function OrderCard({ order }: OrderCardProps) {
     return (
@@ -52,7 +52,8 @@ export default function OrderCard({ order }: OrderCardProps) {
                         </p>
                     </div>
                     <Badge
-                        className={`${statusColors[order.status as keyof typeof statusColors] || "bg-gray-100 text-gray-800"} self-start sm:self-auto`}
+                        variant={statusVariants[order.status as keyof typeof statusVariants] || "secondary"}
+                        className="self-start sm:self-auto"
                     >
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                     </Badge>
