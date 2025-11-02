@@ -11,7 +11,7 @@ interface Order {
     orderNumber: string
     status: string
     totalAmount: string
-    created_at: Date
+    createdAt: Date
     items: Array<{
         id: number
         productName: string
@@ -44,7 +44,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                             Order #{order.orderNumber}
                         </CardTitle>
                         <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                            Placed on {new Date(order.created_at).toLocaleDateString("en-US", {
+                            Placed on {new Date(order.createdAt).toLocaleDateString("en-US", {
                             year: "numeric",
                             month: "long",
                             day: "numeric"

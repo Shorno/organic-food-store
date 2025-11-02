@@ -5,7 +5,7 @@ interface Order {
     orderNumber: string
     status: string
     totalAmount: string
-    created_at: Date
+    createdAt: Date
     items: Array<{
         id: number
         productName: string

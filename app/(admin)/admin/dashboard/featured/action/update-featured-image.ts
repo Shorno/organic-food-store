@@ -45,7 +45,7 @@ export default async function updateFeaturedImage(
                 subtitle: validData.subtitle,
                 cta: validData.cta,
                 ctaLink: validData.ctaLink,
-                updated_at: new Date(),
+                updatedAt: new Date(),
             })
             .where(eq(featuredImages.id, validData.id))
             .returning()

@@ -40,8 +40,8 @@ export default async function createFeaturedImage(
             .insert(featuredImages)
             .values({
                 ...validData,
-                created_at: new Date(),
-                updated_at: new Date(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
             })
             .returning()
 

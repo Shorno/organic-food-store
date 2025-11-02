@@ -12,7 +12,7 @@ export default function OrderInfoSection({ order }: OrderInfoSectionProps) {
             <CardHeader>
                 <CardTitle className="text-lg sm:text-xl">Order Information</CardTitle>
                 <CardDescription className="text-sm">
-                    Placed on {new Date(order.created_at).toLocaleDateString("en-US", {
+                    Placed on {new Date(order.createdAt).toLocaleDateString("en-US", {
                     weekday: "long",
                     year: "numeric",
                     month: "long",
@@ -31,7 +31,7 @@ export default function OrderInfoSection({ order }: OrderInfoSectionProps) {
                         <div className="min-w-0">
                             <p className="text-xs sm:text-sm text-muted-foreground">Order Date</p>
                             <p className="font-medium text-sm sm:text-base">
-                                {new Date(order.created_at).toLocaleDateString()}
+                                {new Date(order.createdAt).toLocaleDateString()}
                             </p>
                         </div>
                     </div>

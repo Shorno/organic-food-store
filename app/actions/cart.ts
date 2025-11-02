@@ -101,7 +101,7 @@ export async function addToCart(productId: number, quantity: number = 1) {
                 .update(cartItem)
                 .set({
                     quantity: finalQuantity,
-                    updated_at: new Date()
+                    updatedAt: new Date()
                 })
                 .where(eq(cartItem.id, existingItem.id));
         } else {
@@ -153,7 +153,7 @@ export async function updateCartItemQuantity(productId: number, quantity: number
                 .update(cartItem)
                 .set({
                     quantity,
-                    updated_at: new Date()
+                    updatedAt: new Date()
                 })
                 .where(eq(cartItem.id, existingItem.id));
         }
@@ -226,7 +226,7 @@ export async function syncCartToDatabase(items: CartItemData[]) {
                     .update(cartItem)
                     .set({
                         quantity: maxQuantity,
-                        updated_at: new Date()
+                        updatedAt: new Date()
                     })
                     .where(eq(cartItem.id, existingItem.id));
 

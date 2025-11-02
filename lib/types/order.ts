@@ -27,7 +27,7 @@ export interface OrderData {
     shippingArea: string | null
     shippingPostalCode: string
     shippingCountry: string
-    created_at: Date
+    createdAt: Date
     items: OrderItem[]
 }
 

@@ -1,4 +1,3 @@
-// app/actions/products.ts
 "use server"
 
 
@@ -28,7 +27,7 @@ export async function getCategoriesWithProducts(limit: number = 4) {
                     },
                 },
                 limit: limit,
-                orderBy: (product, { desc }) => [desc(product.created_at)],
+                orderBy: (product, { desc }) => [desc(product.createdAt)],
             })
 
             return {
