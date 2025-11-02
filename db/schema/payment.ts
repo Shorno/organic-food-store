@@ -2,12 +2,7 @@ import {decimal, integer, pgEnum, pgTable, serial, timestamp, varchar} from "dri
 import { order } from "./order";
 import {timestamps} from "@/db/schema/columns.helpers";
 
-export const paymentMethodEnum = pgEnum("payment_method", [
-    "bkash",
-    "nagad",
-    "rocket",
-    "cod",
-]);
+
 
 export const paymentStatusEnum = pgEnum("payment_status", [
     "pending",
@@ -25,9 +20,9 @@ export const payment = pgTable("payment", {
         .notNull()
         .references(() => order.id, { onDelete: "restrict" }),
 
-    // transactionId: varchar("transaction_id", { length: 255 }).unique(),
-    paymentMethod: paymentMethodEnum("payment_method").notNull(),
-    paymentProvider: varchar("payment_provider", { length: 50 }),
+    transactionId: varchar("transaction_id", { length: 255 }).unique(),
+    paymentMethod: varchar("payment_method", { length: 50 }).notNull(),
+    paymentProvider: varchar("payment_provider", { length: 50 }).default("sslcommerz"),
 
     status: paymentStatusEnum("status").default("pending").notNull(),
 
