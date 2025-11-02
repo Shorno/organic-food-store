@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { timestamps } from "@/db/schema/columns.helpers";
 import {product} from "@/db/schema/product";
-import {relations} from "drizzle-orm";
+import {InferEnum, relations} from "drizzle-orm";
 import {payment} from "@/db/schema/payment";
 
 
@@ -23,6 +23,7 @@ export const orderStatusEnum = pgEnum("order_status", [
     "refunded"
 ]);
 
+export type OrderStatus = InferEnum<typeof orderStatusEnum>;
 
 export const order = pgTable("order", {
     id: serial("id").primaryKey(),
@@ -118,4 +119,4 @@ export const orderItemRelations = relations(orderItem, ({ one }) => ({
 
 
 export type Order = typeof order.$inferSelect;
-
+export type OrderItem = typeof orderItem.$inferSelect;
