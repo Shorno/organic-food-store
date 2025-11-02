@@ -1,12 +1,17 @@
+"use client";
+
 import getProducts from "@/app/(admin)/admin/dashboard/products/actions/get-products";
 import ProductTable from "@/app/(admin)/admin/dashboard/products/_components/product-table";
-import {productColumns} from "@/app/(admin)/admin/dashboard/products/_components/product-columns";
+import { useProductColumns } from "@/app/(admin)/admin/dashboard/products/_components/product-columns";
+import { use } from "react";
 
-export default async function ProductList() {
-    const products = await getProducts()
+export default function ProductList({
+  productsPromise,
+}: {
+  productsPromise: Promise<Awaited<ReturnType<typeof getProducts>>>;
+}) {
+  const products = use(productsPromise);
+  const columns = useProductColumns();
 
-    return (
-        <ProductTable columns={productColumns} data={products}/>
-    )
+  return <ProductTable columns={columns} data={products} />;
 }
-

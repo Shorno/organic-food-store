@@ -1,12 +1,17 @@
+"use client";
+
 import { getOrders } from "@/app/(admin)/admin/dashboard/orders/actions/get-orders";
 import OrderTable from "@/app/(admin)/admin/dashboard/orders/_components/order-table";
-import { orderColumns } from "@/app/(admin)/admin/dashboard/orders/_components/order-columns";
+import { useOrderColumns } from "@/app/(admin)/admin/dashboard/orders/_components/order-columns";
+import { use } from "react";
 
-export default async function OrderList() {
-    const orders = await getOrders()
+export default function OrderList({
+  ordersPromise,
+}: {
+  ordersPromise: Promise<Awaited<ReturnType<typeof getOrders>>>;
+}) {
+  const orders = use(ordersPromise);
+  const columns = useOrderColumns();
 
-    return (
-        <OrderTable columns={orderColumns} data={orders} />
-    )
+  return <OrderTable columns={columns} data={orders} />;
 }
-

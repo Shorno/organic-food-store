@@ -1,11 +1,17 @@
+"use client";
+
 import getCategories from "@/app/(admin)/admin/dashboard/category/actions/category/get-categories";
 import CategoryTable from "@/app/(admin)/admin/dashboard/category/_components/category/category-table";
-import {categoryColumn} from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
+import { useCategoryColumns } from "@/app/(admin)/admin/dashboard/category/_components/category/category-columns";
+import { use } from "react";
 
-export default async function CategoryList() {
-    const categories = await getCategories()
+export default function CategoryList({
+  categoriesPromise,
+}: {
+  categoriesPromise: Promise<Awaited<ReturnType<typeof getCategories>>>;
+}) {
+  const categories = use(categoriesPromise);
+  const columns = useCategoryColumns();
 
-    return (
-        <CategoryTable columns={categoryColumn} data={categories}/>
-    )
+  return <CategoryTable columns={columns} data={categories} />;
 }

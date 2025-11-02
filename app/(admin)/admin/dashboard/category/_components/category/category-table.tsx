@@ -25,6 +25,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import NewCategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/category/new-category-dialog";
+import { useTranslations } from "next-intl"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -35,6 +36,8 @@ export default function CategoryTable<TData, TValue>({
                                                          columns,
                                                          data,
                                                      }: DataTableProps<TData, TValue>) {
+    const t = useTranslations('categories');
+    const tCommon = useTranslations('common');
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -63,7 +66,7 @@ export default function CategoryTable<TData, TValue>({
         <div className="w-full">
             <div className="flex items-center justify-between py-4 gap-2">
                 <Input
-                    placeholder="Filter categories..."
+                    placeholder={t('filterByName')}
                     value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("name")?.setFilterValue(event.target.value)
@@ -115,7 +118,7 @@ export default function CategoryTable<TData, TValue>({
                                     colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    No results.
+                                    {t('noResults')}
                                 </TableCell>
                             </TableRow>
                         )}
@@ -130,7 +133,7 @@ export default function CategoryTable<TData, TValue>({
                         onClick={() => table.previousPage()}
                         disabled={!table.getCanPreviousPage()}
                     >
-                        Previous
+                        {tCommon('previous')}
                     </Button>
                     <Button
                         variant="outline"
@@ -138,7 +141,7 @@ export default function CategoryTable<TData, TValue>({
                         onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}
                     >
-                        Next
+                        {tCommon('next')}
                     </Button>
                 </div>
             </div>
