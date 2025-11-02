@@ -1,4 +1,3 @@
-
 import Link from "next/link"
 import Image from "next/image"
 import {LayoutGrid } from "lucide-react"
@@ -24,10 +23,10 @@ export default function MobileNav({categories}: MobileNavProps) {
     return (
         <ScrollArea className="h-full py-6">
             <div className="px-4 pb-4">
-                <Link href="/categories">
+                <Link href="/products">
                     <Button className="w-full gap-2 mb-4" size="lg">
                         <LayoutGrid className="h-4 w-4" />
-                        All Categories
+                        All Products
                     </Button>
                 </Link>
 
@@ -39,7 +38,7 @@ export default function MobileNav({categories}: MobileNavProps) {
                             return (
                                 <Link
                                     key={category.name}
-                                    href={`/${category.slug}`}
+                                    href={`/products/${category.slug}`}
                                     className="flex items-center gap-3 py-2  mb-2 rounded-md hover:bg-accent transition-colors"
                                 >
                                     <div className="relative h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
@@ -59,7 +58,7 @@ export default function MobileNav({categories}: MobileNavProps) {
                             <Accordion type="single" collapsible className="w-full" key={category.name}>
                                 <AccordionItem value={`item-${idx}`}>
                                     <AccordionTrigger className="hover:no-underline">
-                                        <Link href={`/${category.slug}`} onClick={(e) => e.stopPropagation()}>
+                                        <Link href={`/products/${category.slug}`} onClick={(e) => e.stopPropagation()}>
                                             <div className="flex items-center gap-3">
                                                 <div className="relative h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
                                                     <Image
@@ -79,7 +78,7 @@ export default function MobileNav({categories}: MobileNavProps) {
                                             {category.subCategory.map((sub) => (
                                                 <Link
                                                     key={sub.name}
-                                                    href={`/${category.slug}/${sub.slug}`}
+                                                    href={`/products/${category.slug}?subcategory=${sub.slug}`}
                                                     className="flex items-center gap-3 py-2 px-2 rounded-md hover:bg-accent transition-colors"
                                                 >
                                                     <div className="relative h-10 w-10 rounded-md overflow-hidden flex-shrink-0">

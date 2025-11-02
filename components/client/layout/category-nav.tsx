@@ -25,10 +25,10 @@ export default function CategoryNav({categories}: CategoryNavProps) {
         <div className="hidden lg:block border-b bg-muted/30">
             <div className="container mx-auto">
                 <div className="flex items-center gap-2">
-                    <Link href="/categories">
+                    <Link href="/products">
                         <Button variant="default" className="h-12 gap-2 rounded-none">
                             <LayoutGrid className="h-4 w-4" />
-                            All Categories
+                            All Products
                         </Button>
                     </Link>
 
@@ -41,7 +41,7 @@ export default function CategoryNav({categories}: CategoryNavProps) {
                                 if (!hasSubcategories) {
                                     return (
                                         <NavigationMenuItem key={category.name}>
-                                            <Link href={`/${category.slug}`}>
+                                            <Link href={`/products/${category.slug}`}>
                                                 <Button variant="ghost" className="h-12 gap-2">
                                                     <div className="relative h-5 w-5 rounded-full overflow-hidden">
                                                         <Image
@@ -62,7 +62,7 @@ export default function CategoryNav({categories}: CategoryNavProps) {
                                     <NavigationMenuItem key={category.name}>
                                         <NavigationMenuTrigger className="h-12 gap-2">
                                             <Link
-                                                href={`/${category.slug}`}
+                                                href={`/products/${category.slug}`}
                                                 onClick={(e) => e.stopPropagation()}
                                                 className="flex items-center gap-2"
                                             >
@@ -84,7 +84,7 @@ export default function CategoryNav({categories}: CategoryNavProps) {
                                                     <li key={sub.name}>
                                                         <NavigationMenuLink asChild>
                                                             <Link
-                                                                href={`/${category.slug}/${sub.slug}`}
+                                                                href={`/products/${category.slug}?subcategory=${sub.slug}`}
                                                                 className={cn(
                                                                     "block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                                                                 )}
