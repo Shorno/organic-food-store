@@ -3,10 +3,14 @@ import {AppSidebar} from "@/components/dashboard/app-sidebar";
 import {SiteHeader} from "@/components/dashboard/site-header";
 import {checkAuth} from "@/app/actions/auth/checkAuth";
 import {unauthorized} from "next/navigation";
+import {NextIntlClientProvider} from "next-intl";
+import {getMessages} from "next-intl/server";
 
 export default async function AdminDashboardLayout({children}: { children: React.ReactNode }) {
     const session = await checkAuth();
     const isAdmin = session?.user?.role === "admin";
+    const messages = await getMessages();
+
     if (!isAdmin) {
         unauthorized()
     }
@@ -26,7 +30,9 @@ export default async function AdminDashboardLayout({children}: { children: React
                 <div className="flex flex-1 flex-col">
                     <div className="@container/main flex flex-1 flex-col gap-2">
                         <div className="flex flex-col gap-4 p-4 md:gap-6 md:p-6">
-                            {children}
+                            <NextIntlClientProvider messages={messages}>
+                                {children}
+                            </NextIntlClientProvider>
                         </div>
                     </div>
                 </div>

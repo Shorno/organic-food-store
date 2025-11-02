@@ -31,6 +31,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useTranslations } from "next-intl"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -41,6 +42,9 @@ export default function OrderTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
+    const t = useTranslations('orders');
+    const tCommon = useTranslations('common');
+
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -69,7 +73,7 @@ export default function OrderTable<TData, TValue>({
         <div className="w-full">
             <div className="flex items-center justify-between py-4 gap-2">
                 <Input
-                    placeholder="Filter by order number..."
+                    placeholder={t('filterByOrderNumber')}
                     value={(table.getColumn("orderNumber")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("orderNumber")?.setFilterValue(event.target.value)
@@ -83,17 +87,17 @@ export default function OrderTable<TData, TValue>({
                     }
                 >
                     <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Filter by status" />
+                        <SelectValue placeholder={t('filterByStatus')} />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="confirmed">Confirmed</SelectItem>
-                        <SelectItem value="processing">Processing</SelectItem>
-                        <SelectItem value="shipped">Shipped</SelectItem>
-                        <SelectItem value="delivered">Delivered</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                        <SelectItem value="refunded">Refunded</SelectItem>
+                        <SelectItem value="all">{t('allStatus')}</SelectItem>
+                        <SelectItem value="pending">{t('status.pending')}</SelectItem>
+                        <SelectItem value="confirmed">{t('status.confirmed')}</SelectItem>
+                        <SelectItem value="processing">{t('status.processing')}</SelectItem>
+                        <SelectItem value="shipped">{t('status.shipped')}</SelectItem>
+                        <SelectItem value="delivered">{t('status.delivered')}</SelectItem>
+                        <SelectItem value="cancelled">{t('status.cancelled')}</SelectItem>
+                        <SelectItem value="refunded">{t('status.refunded')}</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -140,7 +144,7 @@ export default function OrderTable<TData, TValue>({
                                     colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    No results.
+                                    {t('noResults')}
                                 </TableCell>
                             </TableRow>
                         )}
@@ -149,7 +153,7 @@ export default function OrderTable<TData, TValue>({
             </div>
             <div className="flex items-center justify-between py-4">
                 <div className="text-sm text-muted-foreground">
-                    Total Orders: {data.length}
+                    {t('totalOrders')}: {data.length}
                 </div>
                 <div className="space-x-2">
                     <Button
@@ -158,7 +162,7 @@ export default function OrderTable<TData, TValue>({
                         onClick={() => table.previousPage()}
                         disabled={!table.getCanPreviousPage()}
                     >
-                        Previous
+                        {tCommon('previous')}
                     </Button>
                     <Button
                         variant="outline"
@@ -166,7 +170,7 @@ export default function OrderTable<TData, TValue>({
                         onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}
                     >
-                        Next
+                        {tCommon('next')}
                     </Button>
                 </div>
             </div>

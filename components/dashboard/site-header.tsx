@@ -16,6 +16,7 @@ import {LogOutIcon} from "lucide-react"
 import {toast} from "sonner"
 import Link from "next/link"
 import React from "react"
+import {LanguageSwitcher} from "@/components/language-switcher";
 
 export function SiteHeader() {
     const pathname = usePathname()
@@ -89,6 +90,7 @@ export function SiteHeader() {
                         <LogOutIcon/>
                         <span>Logout</span>
                     </Button>
+                    <LanguageSwitcher/>
                 </div>
             </div>
         </header>
