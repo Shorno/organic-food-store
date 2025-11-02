@@ -26,7 +26,7 @@ import {updateProductSchema} from "@/lib/schemas/product.schema"
 import {Switch} from "@/components/ui/switch"
 import ImageUploader from "@/components/ImageUploader"
 import {generateSlug} from "@/utils/generate-slug"
-import {useTransition, useEffect, useState, useMemo} from "react"
+import {useTransition, useState} from "react"
 import updateProduct from "@/app/(admin)/admin/dashboard/products/actions/update-product"
 import {Loader} from "lucide-react"
 import {
@@ -36,13 +36,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import {getCategoriesForSelect} from "@/app/(admin)/admin/dashboard/products/actions/get-categories-for-select"
-import {Category, SubCategory} from "@/db/schema/category"
+import {useCategories, useSubCategories} from "@/hooks/use-categories"
 import {ProductWithRelations} from "./product-columns"
-
-interface CategoryWithSubs extends Category {
-    subCategory: SubCategory[]
-}
 
 interface EditProductDialogProps {
     product: ProductWithRelations
@@ -51,20 +46,10 @@ interface EditProductDialogProps {
 export default function EditProductDialog({product}: EditProductDialogProps) {
     const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
-    const [categories, setCategories] = useState<CategoryWithSubs[]>([])
     const [selectedCategory, setSelectedCategory] = useState<number>(product.categoryId)
 
-    useEffect(() => {
-        getCategoriesForSelect().then(setCategories)
-    }, [])
-
-    const subCategories = useMemo(() => {
-        if (selectedCategory) {
-            const category = categories.find(c => c.id === selectedCategory)
-            return category?.subCategory || []
-        }
-        return []
-    }, [selectedCategory, categories])
+    const {data: categories = []} = useCategories()
+    const subCategories = useSubCategories(selectedCategory)
 
     const form = useForm({
         defaultValues: {
