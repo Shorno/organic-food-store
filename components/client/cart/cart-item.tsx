@@ -31,7 +31,7 @@ export default function CartItem({item}: CartItemProps) {
                 {item.quantity > 1 && (
                     <Badge
                         variant="secondary"
-                        className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center p-0 bg-blue-500 text-white text-xs font-bold rounded-full border-2 border-white"
+                        className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center p-0 text-xs font-bold rounded-full border-2"
                     >
                         {item.quantity}
                     </Badge>
@@ -45,19 +45,19 @@ export default function CartItem({item}: CartItemProps) {
 
 
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center border border-gray-300 rounded-lg bg-gray-50">
+                    <div className="flex items-center border rounded-lg bg-muted/50">
                         <Button
                             onClick={() => decrement(item.id, isAuthenticated)}
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 hover:bg-gray-200 rounded-l-lg rounded-r-none"
+                            className="h-8 w-8 p-0 rounded-l-lg rounded-r-none"
                             disabled={item.quantity <= 1}
                         >
                             <Minus className="h-3.5 w-3.5"/>
                         </Button>
 
                         <div
-                            className="flex items-center justify-center min-w-[40px] h-8 px-2 text-sm font-medium text-gray-900 bg-white border-x border-gray-300">
+                            className="flex items-center justify-center min-w-[40px] h-8 px-2 text-sm font-medium bg-background border-x">
                             {item.quantity}
                         </div>
 
@@ -65,7 +65,7 @@ export default function CartItem({item}: CartItemProps) {
                             onClick={() => increment(item.id, isAuthenticated)}
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0 hover:bg-gray-200 rounded-r-lg rounded-l-none"
+                            className="h-8 w-8 p-0 rounded-r-lg rounded-l-none"
                         >
                             <Plus className="h-3.5 w-3.5"/>
                         </Button>
@@ -74,7 +74,7 @@ export default function CartItem({item}: CartItemProps) {
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                         onClick={() => removeItem(item.id, isAuthenticated)}
                     >
                         <Trash2 className="h-4 w-4"/>
@@ -83,7 +83,7 @@ export default function CartItem({item}: CartItemProps) {
             </div>
 
             <div className="flex-shrink-0 text-right">
-                <p className="text-base font-bold text-gray-900">
+                <p className="text-base font-bold">
                     {formatPrice(item.subtotal)}
                 </p>
             </div>

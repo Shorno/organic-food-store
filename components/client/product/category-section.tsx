@@ -18,14 +18,14 @@ export function CategorySection({ category }: CategorySectionProps) {
         <section className="mb-12">
             {/* Category Header */}
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl md:text-3xl font-bold text-neutral-900">
+                <h2 className="text-2xl md:text-3xl font-bold">
                     {category.name}
                 </h2>
 
                 <Button
                     asChild
                     variant="ghost"
-                    className="gap-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                    className="gap-2"
                 >
                     <Link href={`/products/${category.slug}`}>
                         See All

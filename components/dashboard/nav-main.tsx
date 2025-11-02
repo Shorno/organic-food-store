@@ -39,7 +39,7 @@ export function NavMain({
                                     asChild
                                     onClick={() => setOpenMobile(false)}
                                     isActive={isActive}
-                                    className="flex items-center gap-3 px-3 h-12 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-primary data-[active=true]:font-semibold data-[active=true]:border-l-2 data-[active=true]:border-sidebar-primary"
+                                    className="flex items-center gap-3 px-3 h-12 text-sm font-medium"
                                 >
                                     <Link href={item.url}>
                                         {item.icon && <item.icon size={20}/>}

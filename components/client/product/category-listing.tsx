@@ -7,12 +7,12 @@ export default async function CategoryListing() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-8 text-neutral-900">
+            <h1 className="text-3xl md:text-4xl font-bold mb-8">
                 Our Products
             </h1>
 
             {categoriesWithProducts.length === 0 ? (
-                <p className="text-center text-neutral-500 py-12">
+                <p className="text-center py-12 opacity-60">
                     No products available at the moment.
                 </p>
             ) : (
