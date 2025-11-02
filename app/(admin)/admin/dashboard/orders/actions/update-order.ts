@@ -1,13 +1,19 @@
 "use server"
 
 import { db } from "@/db/config"
-import { order } from "@/db/schema"
+import { order, payment } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
 
 export async function deleteOrder(orderId: number) {
     try {
+        // First, delete the payment record if it exists (to avoid foreign key constraint)
+        await db
+            .delete(payment)
+            .where(eq(payment.orderId, orderId))
+
+        // Then delete the order (order_items will cascade delete automatically)
         await db
             .delete(order)
             .where(eq(order.id, orderId))
@@ -26,4 +32,3 @@ export async function deleteOrder(orderId: number) {
         }
     }
 }
-
