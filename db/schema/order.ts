@@ -10,6 +10,7 @@ import {
 import { timestamps } from "@/db/schema/columns.helpers";
 import {product} from "@/db/schema/product";
 import {relations} from "drizzle-orm";
+import {payment} from "@/db/schema/payment";
 
 
 export const orderStatusEnum = pgEnum("order_status", [
@@ -95,8 +96,12 @@ export const orderItem = pgTable("order_item", {
 });
 
 
-export const orderRelations = relations(order, ({ many }) => ({
+export const orderRelations = relations(order, ({ many, one }) => ({
     items: many(orderItem),
+    payment: one(payment, {
+        fields: [order.id],
+        references: [payment.orderId]
+    }),
 }));
 
 export const orderItemRelations = relations(orderItem, ({ one }) => ({
@@ -109,6 +114,8 @@ export const orderItemRelations = relations(orderItem, ({ one }) => ({
         references: [product.id]
     })
 }));
+
+
 
 export type Order = typeof order.$inferSelect;
 

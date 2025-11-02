@@ -196,7 +196,7 @@ export async function getUserOrders() {
             with: {
                 items: true,
             },
-            orderBy: (order, { desc }) => [desc(order.created_at)],
+            orderBy: (order, { desc }) => [desc(order.createdAt)],
         })
     } catch (error) {
         console.error("Error fetching orders:", error)

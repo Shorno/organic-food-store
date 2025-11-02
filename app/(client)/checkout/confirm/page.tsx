@@ -61,7 +61,7 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
                             <div className="text-right">
                                 <p className="text-sm text-muted-foreground mb-1">Order Date</p>
                                 <p className="font-medium">
-                                    {new Date(order.created_at).toLocaleDateString("en-US", {
+                                    {new Date(order.createdAt).toLocaleDateString("en-US", {
                                         year: "numeric",
                                         month: "long",
                                         day: "numeric"

@@ -9,7 +9,7 @@ export default async function getProducts() {
             subCategory: true,
             images: true,
         },
-        orderBy: (product, { desc }) => [desc(product.created_at)]
+        orderBy: (product, { desc }) => [desc(product.createdAt)]
     })
 }
 

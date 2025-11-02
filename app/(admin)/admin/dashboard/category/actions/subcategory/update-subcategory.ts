@@ -30,7 +30,7 @@ export default async function updateSubcategory(data: UpdateSubcategoryFormValue
                 image: data.image,
                 isActive: data.isActive,
                 displayOrder: data.displayOrder,
-                updated_at: new Date(),
+                updatedAt: new Date(),
             })
             .where(eq(subCategory.id, data.id))
 
