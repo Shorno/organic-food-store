@@ -32,7 +32,7 @@ export default async function deleteFeaturedImage(imageId: number) {
             }
         }
 
-        revalidatePath("/admin/dashboard/featured-images")
+        // Revalidate only client-facing routes (not admin dashboard)
         revalidatePath("/")
 
         return {

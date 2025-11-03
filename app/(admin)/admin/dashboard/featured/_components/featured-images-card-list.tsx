@@ -1,11 +1,29 @@
+"use client"
+
 import React from "react"
 import Image from "next/image"
 import getFeaturedImages from "@/app/(admin)/admin/dashboard/featured/action/get-featured-images"
 import EditFeaturedImageDialog from "@/app/(admin)/admin/dashboard/featured/_components/edit-featured-image-dialog"
 import DeleteFeaturedImageDialog from "@/app/(admin)/admin/dashboard/featured/_components/delete-featured-image-dialog"
+import { useQuery } from "@tanstack/react-query"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export default async function FeaturedImagesCardList() {
-    const featuredImages = await getFeaturedImages()
+export default function FeaturedImagesCardList() {
+    const { data: featuredImages = [], isLoading } = useQuery({
+        queryKey: ['admin-featured-images'],
+        queryFn: getFeaturedImages,
+    })
+
+    if (isLoading) {
+        return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                    <Skeleton key={i} className="h-80 rounded-xl" />
+                ))}
+            </div>
+        )
+    }
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredImages.map((featured) => (

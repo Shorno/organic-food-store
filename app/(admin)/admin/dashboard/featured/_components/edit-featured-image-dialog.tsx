@@ -22,18 +22,46 @@ import {
 } from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
 import ImageUploader from "@/components/ImageUploader"
-import {useTransition} from "react"
 import {FeaturedImage} from "@/db/schema";
 import {editFeaturedImageSchema} from "@/lib/schemas/featured.scheam";
 import updateFeaturedImage from "@/app/(admin)/admin/dashboard/featured/action/update-featured-image";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface EditFeaturedImageDialogProps {
     featuredImage: FeaturedImage
 }
 
 export default function EditFeaturedImageDialog({featuredImage}: EditFeaturedImageDialogProps) {
-    const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: updateFeaturedImage,
+        onSuccess: (result) => {
+            if (!result.success) {
+                switch (result.status) {
+                    case 400:
+                        toast.error("Invalid data.", {description: "Please check your form inputs."})
+                        break
+                    case 401:
+                        toast.error("You are not authorized to perform this action.")
+                        break
+                    case 404:
+                        toast.error("Featured image not found.")
+                        break
+                    default:
+                        toast.error(result.error || "Something went wrong.")
+                }
+                return
+            }
+            queryClient.invalidateQueries({ queryKey: ['admin-featured-images'] })
+            toast.success(result.message)
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("An unexpected error occurred while updating.")
+        },
+    })
 
     const form = useForm({
         defaultValues: {
@@ -48,33 +76,7 @@ export default function EditFeaturedImageDialog({featuredImage}: EditFeaturedIma
             onSubmit: editFeaturedImageSchema,
         },
         onSubmit: async ({value}) => {
-            startTransition(async () => {
-                try {
-                    const result = await updateFeaturedImage(value)
-                    if (!result.success) {
-                        switch (result.status) {
-                            case 400:
-                                toast.error("Invalid data.", {description: "Please check your form inputs."})
-                                break
-                            case 401:
-                                toast.error("You are not authorized to perform this action.")
-                                break
-                            case 404:
-                                toast.error("Featured image not found.")
-                                break
-                            default:
-                                toast.error(result.error || "Something went wrong.")
-                        }
-                        console.error("Update failed:", result)
-                        return
-                    }
-                    toast.success(result.message)
-                    setOpen(false)
-                } catch (error) {
-                    console.error("Unexpected error:", error)
-                    toast.error("An unexpected error occurred while updating.")
-                }
-            })
+            mutation.mutate(value)
         },
     })
 
@@ -102,9 +104,9 @@ export default function EditFeaturedImageDialog({featuredImage}: EditFeaturedIma
                 <form
                     id="edit-featured-image-form"
                     onSubmit={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        form.handleSubmit()
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.handleSubmit();
                     }}
                     className="space-y-4"
                 >
@@ -221,11 +223,17 @@ export default function EditFeaturedImageDialog({featuredImage}: EditFeaturedIma
                     </form.Field>
                 </form>
                 <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setOpen(false)}
+                        disabled={mutation.isPending}
+                    >
                         Cancel
                     </Button>
-                    <Button type="submit" form="edit-featured-image-form" disabled={isPending}>
-                        {isPending ? <Loader className="animate-spin"/> : "Update"}
+                    <Button type="submit" form="edit-featured-image-form" disabled={mutation.isPending}>
+                        {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
+                        Update Featured Image
                     </Button>
                 </DialogFooter>
             </DialogContent>

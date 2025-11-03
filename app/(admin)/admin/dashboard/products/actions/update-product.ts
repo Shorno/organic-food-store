@@ -68,7 +68,8 @@ export default async function updateProduct(
             }
         }
 
-        revalidatePath("/admin/dashboard/products")
+        // Revalidate only client-facing routes (not admin dashboard)
+        revalidatePath("/products")
         revalidatePath("/")
 
         return {
@@ -90,4 +91,3 @@ export default async function updateProduct(
         }
     }
 }
-

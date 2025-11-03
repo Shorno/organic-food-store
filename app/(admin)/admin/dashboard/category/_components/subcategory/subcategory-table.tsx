@@ -25,17 +25,18 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import NewSubcategoryDialog from "@/app/(admin)/admin/dashboard/category/_components/subcategory/new-subcategory-dialog"
+import { useQuery } from "@tanstack/react-query"
+import getSubcategories from "@/app/(admin)/admin/dashboard/category/actions/subcategory/get-subcategories"
+import TableSkeleton from "@/app/(admin)/admin/dashboard/category/_components/table-skeleton"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
     categoryId: number
     categoryName: string
 }
 
 export default function SubcategoryTable<TData, TValue>({
                                                             columns,
-                                                            data,
                                                             categoryId,
                                                             categoryName,
                                                         }: DataTableProps<TData, TValue>) {
@@ -44,8 +45,13 @@ export default function SubcategoryTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
 
+    const { data = [], isLoading } = useQuery({
+        queryKey: ['admin-subcategories', categoryId],
+        queryFn: () => getSubcategories(categoryId),
+    })
+
     const table = useReactTable({
-        data,
+        data: data as TData[],
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -62,6 +68,10 @@ export default function SubcategoryTable<TData, TValue>({
             rowSelection,
         },
     })
+
+    if (isLoading) {
+        return <TableSkeleton />
+    }
 
     return (
         <div className="w-full">

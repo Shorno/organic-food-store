@@ -16,9 +16,9 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import {useTransition} from "react"
 import {Loader} from "lucide-react"
 import deleteProduct from "@/app/(admin)/admin/dashboard/products/actions/delete-product"
+import {useMutation, useQueryClient} from "@tanstack/react-query"
 
 interface DeleteProductDialogProps {
     productId: number
@@ -26,34 +26,36 @@ interface DeleteProductDialogProps {
 }
 
 export default function DeleteProductDialog({productId, productName}: DeleteProductDialogProps) {
-    const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: (id: number) => deleteProduct(id),
+        onSuccess: (result) => {
+            if (!result.success) {
+                switch (result.status) {
+                    case 401:
+                        toast.error("You are not authorized to perform this action.")
+                        break
+                    case 404:
+                        toast.error("Product not found.")
+                        break
+                    default:
+                        toast.error(result.error || "Failed to delete product.")
+                }
+                return
+            }
+            queryClient.invalidateQueries({queryKey: ['admin-products']})
+            toast.success(result.message)
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("An unexpected error occurred while deleting the product.")
+        },
+    })
 
     const handleDelete = () => {
-        startTransition(async () => {
-            try {
-                const result = await deleteProduct(productId)
-                if (!result.success) {
-                    switch (result.status) {
-                        case 401:
-                            toast.error("You are not authorized to perform this action.")
-                            break
-                        case 404:
-                            toast.error("Product not found.")
-                            break
-                        default:
-                            toast.error(result.error || "Failed to delete product.")
-                    }
-                    console.error("Delete product failed:", result)
-                    return
-                }
-                toast.success(result.message)
-                setOpen(false)
-            } catch (error) {
-                console.error("Unexpected error:", error)
-                toast.error("An unexpected error occurred while deleting the product.")
-            }
-        })
+        mutation.mutate(productId)
     }
 
     return (
@@ -91,16 +93,16 @@ export default function DeleteProductDialog({productId, productName}: DeleteProd
                 </div>
 
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={mutation.isPending}>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={(e) => {
                             e.preventDefault()
                             handleDelete()
                         }}
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                        {isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
+                        {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
                         Delete Product
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -108,4 +110,3 @@ export default function DeleteProductDialog({productId, productName}: DeleteProd
         </AlertDialog>
     )
 }
-

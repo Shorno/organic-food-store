@@ -45,7 +45,6 @@ export default async function createFeaturedImage(
             })
             .returning()
 
-        revalidatePath("/admin/dashboard/featured")
         revalidatePath("/")
 
         return {

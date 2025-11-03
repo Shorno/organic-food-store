@@ -3,8 +3,6 @@
 import { db } from "@/db/config"
 import { order, payment } from "@/db/schema"
 import { eq } from "drizzle-orm"
-import { revalidatePath } from "next/cache"
-
 
 export async function deleteOrder(orderId: number) {
     try {
@@ -18,7 +16,7 @@ export async function deleteOrder(orderId: number) {
             .delete(order)
             .where(eq(order.id, orderId))
 
-        revalidatePath("/admin/dashboard/orders")
+        // No revalidatePath needed - admin dashboard uses TanStack Query only
 
         return {
             success: true,

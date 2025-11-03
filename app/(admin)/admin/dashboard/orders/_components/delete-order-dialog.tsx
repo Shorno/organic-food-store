@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useTransition } from "react"
 import { toast } from "sonner"
 import { Trash2 } from "lucide-react"
 
@@ -18,6 +17,7 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { deleteOrder } from "../actions/update-order"
 import { Loader } from "lucide-react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 interface DeleteOrderDialogProps {
     orderId: number
@@ -26,23 +26,22 @@ interface DeleteOrderDialogProps {
 
 export default function DeleteOrderDialog({ orderId, orderNumber }: DeleteOrderDialogProps) {
     const [open, setOpen] = React.useState(false)
-    const [isPending, startTransition] = useTransition()
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: (id: number) => deleteOrder(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+            toast.success("Order deleted successfully")
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("Failed to delete order")
+        },
+    })
 
     const handleDelete = () => {
-        startTransition(async () => {
-            try {
-                const result = await deleteOrder(orderId)
-
-                if (result.success) {
-                    toast.success("Order deleted successfully")
-                    setOpen(false)
-                } else {
-                    toast.error(result.error || "Failed to delete order")
-                }
-            } catch (error) {
-                toast.error("An error occurred while deleting the order")
-            }
-        })
+        mutation.mutate(orderId)
     }
 
     return (
@@ -71,7 +70,7 @@ export default function DeleteOrderDialog({ orderId, orderNumber }: DeleteOrderD
                         type="button"
                         variant="outline"
                         onClick={() => setOpen(false)}
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                     >
                         Cancel
                     </Button>
@@ -79,9 +78,9 @@ export default function DeleteOrderDialog({ orderId, orderNumber }: DeleteOrderD
                         type="button"
                         variant="destructive"
                         onClick={handleDelete}
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                     >
-                        {isPending && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+                        {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin" />}
                         Delete Order
                     </Button>
                 </DialogFooter>
@@ -89,4 +88,3 @@ export default function DeleteOrderDialog({ orderId, orderNumber }: DeleteOrderD
         </Dialog>
     )
 }
-

@@ -5,15 +5,18 @@ import {Button} from "@/components/ui/button"
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu"
 import {Check, Languages} from "lucide-react"
 
+function getLocaleFromCookie() {
+    if (typeof document === 'undefined') return 'en'
+
+    return document.cookie
+        .split('; ')
+        .find(row => row.startsWith('locale='))
+        ?.split('=')[1] || 'en'
+}
+
 export function LanguageSwitcher() {
     const [isPending, startTransition] = useTransition()
-
-    const [currentLocale, setCurrentLocale] = useState(() => {
-        return document.cookie
-            .split('; ')
-            .find(row => row.startsWith('locale='))
-            ?.split('=')[1] || 'en'
-    })
+    const [currentLocale, setCurrentLocale] = useState(getLocaleFromCookie)
 
     const changeLanguage = (locale: string) => {
         startTransition(() => {
@@ -45,11 +48,14 @@ export function LanguageSwitcher() {
                     <span>English</span>
                     {currentLocale === 'en' && <Check className="h-4 w-4" />}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('bn')}>
-                    বাংলা
+                <DropdownMenuItem
+                    onClick={() => changeLanguage('bn')}
+                    className="flex items-center justify-between gap-4"
+                >
+                    <span>বাংলা</span>
+                    {currentLocale === 'bn' && <Check className="h-4 w-4" />}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )
 }
-
