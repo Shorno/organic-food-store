@@ -3,7 +3,6 @@
 import { db } from "@/db/config"
 import {order, OrderStatus} from "@/db/schema"
 import { eq } from "drizzle-orm"
-import { revalidatePath } from "next/cache"
 
 export async function updateOrderStatus(orderId: number, status: OrderStatus) {
     try {
@@ -29,8 +28,6 @@ export async function updateOrderStatus(orderId: number, status: OrderStatus) {
             .set(updateData)
             .where(eq(order.id, orderId))
 
-        revalidatePath("/admin/dashboard/orders")
-
         return {
             success: true,
             message: "Order status updated successfully"
@@ -43,4 +40,3 @@ export async function updateOrderStatus(orderId: number, status: OrderStatus) {
         }
     }
 }
-

@@ -2,8 +2,8 @@
 
 import {category} from "@/db/schema/category"
 import {eq} from "drizzle-orm"
-import {revalidatePath} from "next/cache"
 import {db} from "@/db/config";
+import {revalidatePath} from "next/cache";
 
 export default async function deleteCategory(categoryId: number) {
     try {
@@ -26,7 +26,8 @@ export default async function deleteCategory(categoryId: number) {
             .delete(category)
             .where(eq(category.id, categoryId))
 
-        revalidatePath("/admin/dashboard/category")
+        // Revalidate only client-facing routes (not admin dashboard)
+        revalidatePath("/products")
         revalidatePath("/")
 
         return {

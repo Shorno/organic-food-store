@@ -58,7 +58,6 @@ export default async function updateFeaturedImage(
             }
         }
 
-        revalidatePath("/admin/dashboard/featured-images")
         revalidatePath("/")
 
         return {

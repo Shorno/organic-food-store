@@ -3,15 +3,20 @@
 import { getOrders } from "@/app/(admin)/admin/dashboard/orders/actions/get-orders";
 import OrderTable from "@/app/(admin)/admin/dashboard/orders/_components/order-table";
 import { useOrderColumns } from "@/app/(admin)/admin/dashboard/orders/_components/order-columns";
-import { use } from "react";
+import { useQuery } from "@tanstack/react-query";
+import TableSkeleton from "@/app/(admin)/admin/dashboard/category/_components/table-skeleton";
 
-export default function OrderList({
-  ordersPromise,
-}: {
-  ordersPromise: Promise<Awaited<ReturnType<typeof getOrders>>>;
-}) {
-  const orders = use(ordersPromise);
+export default function OrderList() {
   const columns = useOrderColumns();
+
+  const { data: orders = [], isLoading } = useQuery({
+    queryKey: ["admin-orders"],
+    queryFn: getOrders,
+  });
+
+  if (isLoading) {
+    return <TableSkeleton />;
+  }
 
   return <OrderTable columns={columns} data={orders} />;
 }

@@ -26,7 +26,7 @@ import {updateProductSchema} from "@/lib/schemas/product.schema"
 import {Switch} from "@/components/ui/switch"
 import ImageUploader from "@/components/ImageUploader"
 import {generateSlug} from "@/utils/generate-slug"
-import {useTransition, useState} from "react"
+import {useState} from "react"
 import updateProduct from "@/app/(admin)/admin/dashboard/products/actions/update-product"
 import {Loader} from "lucide-react"
 import {
@@ -38,18 +38,49 @@ import {
 } from "@/components/ui/select"
 import {useCategories, useSubCategories} from "@/hooks/use-categories"
 import {ProductWithRelations} from "./product-columns"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 interface EditProductDialogProps {
     product: ProductWithRelations
 }
 
 export default function EditProductDialog({product}: EditProductDialogProps) {
-    const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
     const [selectedCategory, setSelectedCategory] = useState<number>(product.categoryId)
+    const queryClient = useQueryClient()
 
     const {data: categories = []} = useCategories()
     const subCategories = useSubCategories(selectedCategory)
+
+    const mutation = useMutation({
+        mutationFn: updateProduct,
+        onSuccess: (result) => {
+            if (!result.success) {
+                switch (result.status) {
+                    case 400:
+                        toast.error("Invalid product data.", {
+                            description: "Please check your form inputs.",
+                        })
+                        break
+                    case 401:
+                        toast.error("You are not authorized to perform this action.")
+                        break
+                    case 404:
+                        toast.error("Product not found.")
+                        break
+                    default:
+                        toast.error(result.error || "Something went wrong.")
+                }
+                return
+            }
+            queryClient.invalidateQueries({ queryKey: ['admin-products'] })
+            toast.success(result.message)
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("An unexpected error occurred while updating the product.")
+        },
+    })
 
     const form = useForm({
         defaultValues: {
@@ -70,35 +101,7 @@ export default function EditProductDialog({product}: EditProductDialogProps) {
             onSubmit: updateProductSchema,
         },
         onSubmit: async ({value}) => {
-            startTransition(async () => {
-                try {
-                    const updateResult = await updateProduct(value)
-                    if (!updateResult.success) {
-                        switch (updateResult.status) {
-                            case 400:
-                                toast.error("Invalid product data.", {
-                                    description: "Please check your form inputs.",
-                                })
-                                break
-                            case 401:
-                                toast.error("You are not authorized to perform this action.")
-                                break
-                            case 404:
-                                toast.error("Product not found.")
-                                break
-                            default:
-                                toast.error(updateResult.error || "Something went wrong.")
-                        }
-                        console.error("Update product failed:", updateResult)
-                        return
-                    }
-                    toast.success(updateResult.message)
-                    setOpen(false)
-                } catch (error) {
-                    console.error("Unexpected error:", error)
-                    toast.error("An unexpected error occurred while updating the product.")
-                }
-            })
+            mutation.mutate(value)
         },
     })
 
@@ -423,16 +426,16 @@ export default function EditProductDialog({product}: EditProductDialogProps) {
                         type="button"
                         variant="outline"
                         onClick={() => setOpen(false)}
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                     >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
                         form="edit-product-form"
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                     >
-                        {isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
+                        {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
                         Update Product
                     </Button>
                 </DialogFooter>

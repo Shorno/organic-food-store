@@ -49,11 +49,10 @@ export default async function createCategory(
 
         const validData = result.data
 
-
         const newCategory = await db.insert(category).values(validData).returning()
 
-
-        revalidatePath("/admin/dashboard/category")
+        // Revalidate only client-facing routes (not admin dashboard)
+        revalidatePath("/products")
         revalidatePath("/")
 
         return {

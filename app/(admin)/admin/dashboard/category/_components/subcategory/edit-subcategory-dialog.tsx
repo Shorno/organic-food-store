@@ -26,19 +26,49 @@ import {Input} from "@/components/ui/input"
 import {Switch} from "@/components/ui/switch"
 import ImageUploader from "@/components/ImageUploader"
 import {generateSlug} from "@/utils/generate-slug"
-import {useTransition} from "react"
 import {Loader} from "lucide-react"
 import {updateSubcategorySchema} from "@/lib/schemas/category.scheam"
 import {SubCategory} from "@/db/schema"
 import updateSubcategory from "@/app/(admin)/admin/dashboard/category/actions/subcategory/update-subcategory"
+import {useMutation, useQueryClient} from "@tanstack/react-query"
 
 interface EditSubcategoryDialogProps {
     subcategory: SubCategory
 }
 
 export default function EditSubcategoryDialog({subcategory}: EditSubcategoryDialogProps) {
-    const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: updateSubcategory,
+        onSuccess: (result) => {
+            if (!result.success) {
+                switch (result.status) {
+                    case 400:
+                        toast.error("Invalid subcategory data.", {
+                            description: "Please check your form inputs.",
+                        })
+                        break
+                    case 401:
+                        toast.error("You are not authorized to perform this action.")
+                        break
+                    case 404:
+                        toast.error("Subcategory not found.")
+                        break
+                    default:
+                        toast.error(result.error || "Something went wrong.")
+                }
+                return
+            }
+            queryClient.invalidateQueries({queryKey: ['admin-subcategories', subcategory.categoryId]})
+            toast.success(result.message)
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("An unexpected error occurred while updating the subcategory.")
+        },
+    })
 
     const form = useForm({
         defaultValues: {
@@ -55,35 +85,7 @@ export default function EditSubcategoryDialog({subcategory}: EditSubcategoryDial
             onSubmit: updateSubcategorySchema,
         },
         onSubmit: async ({value}) => {
-            startTransition(async () => {
-                try {
-                    const result = await updateSubcategory(value)
-                    if (!result.success) {
-                        switch (result.status) {
-                            case 400:
-                                toast.error("Invalid subcategory data.", {
-                                    description: "Please check your form inputs.",
-                                })
-                                break
-                            case 401:
-                                toast.error("You are not authorized to perform this action.")
-                                break
-                            case 404:
-                                toast.error("Subcategory not found.")
-                                break
-                            default:
-                                toast.error(result.error || "Something went wrong.")
-                        }
-                        console.error("Update subcategory failed:", result)
-                        return
-                    }
-                    toast.success(result.message)
-                    setOpen(false)
-                } catch (error) {
-                    console.error("Unexpected error:", error)
-                    toast.error("An unexpected error occurred while updating the subcategory.")
-                }
-            })
+            mutation.mutate(value)
         },
     })
 
@@ -258,15 +260,17 @@ export default function EditSubcategoryDialog({subcategory}: EditSubcategoryDial
                         type="button"
                         variant="outline"
                         onClick={() => setOpen(false)}
+                        disabled={mutation.isPending}
                     >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
                         form="edit-subcategory-form"
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                     >
-                        {isPending ? <Loader className="animate-spin"/> : "Update Subcategory"}
+                        {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
+                        Update Subcategory
                     </Button>
                 </DialogFooter>
             </DialogContent>

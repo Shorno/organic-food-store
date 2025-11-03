@@ -2,9 +2,9 @@
 
 import {category} from "@/db/schema/category"
 import {eq} from "drizzle-orm"
-import {revalidatePath} from "next/cache"
 import {UpdateCategoryFormValues} from "@/lib/schemas/category.scheam";
 import {db} from "@/db/config";
+import {revalidatePath} from "next/cache";
 
 export default async function updateCategory(data: UpdateCategoryFormValues) {
     try {
@@ -35,7 +35,8 @@ export default async function updateCategory(data: UpdateCategoryFormValues) {
             })
             .where(eq(category.id, data.id))
 
-        revalidatePath("/admin/dashboard/category")
+        // Revalidate only client-facing routes (not admin dashboard)
+        revalidatePath("/products")
         revalidatePath("/")
 
         return {

@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useTransition } from "react"
 import { toast } from "sonner"
 import { RefreshCw } from "lucide-react"
 
@@ -27,7 +26,8 @@ import { OrderWithDetails } from "./order-columns"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { updateOrderStatus } from "../actions/update-order-status"
 import { Loader } from "lucide-react"
-import {OrderStatus} from "@/db/schema";
+import {OrderStatus} from "@/db/schema"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 interface UpdateOrderStatusDialogProps {
     order: OrderWithDetails
@@ -45,8 +45,21 @@ const orderStatuses = [
 
 export default function UpdateOrderStatusDialog({ order }: UpdateOrderStatusDialogProps) {
     const [open, setOpen] = React.useState(false)
-    const [isPending, startTransition] = useTransition()
     const [selectedStatus, setSelectedStatus] = React.useState<OrderStatus>(order.status)
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: ({ orderId, status }: { orderId: number; status: OrderStatus }) =>
+            updateOrderStatus(orderId, status),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+            toast.success("Order status updated successfully")
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("Failed to update order status")
+        },
+    })
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -57,20 +70,7 @@ export default function UpdateOrderStatusDialog({ order }: UpdateOrderStatusDial
             return
         }
 
-        startTransition(async () => {
-            try {
-                const result = await updateOrderStatus(order.id, selectedStatus)
-
-                if (result.success) {
-                    toast.success("Order status updated successfully")
-                    setOpen(false)
-                } else {
-                    toast.error(result.error || "Failed to update order status")
-                }
-            } catch {
-                toast.error("An error occurred while updating order status")
-            }
-        })
+        mutation.mutate({ orderId: order.id, status: selectedStatus })
     }
 
     return (
@@ -98,9 +98,9 @@ export default function UpdateOrderStatusDialog({ order }: UpdateOrderStatusDial
                         <Select
                             value={selectedStatus}
                             onValueChange={(value) => setSelectedStatus(value as OrderStatus)}
-                            disabled={isPending}
+                            disabled={mutation.isPending}
                         >
-                            <SelectTrigger id="status" className="mt-2">
+                            <SelectTrigger>
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -118,12 +118,12 @@ export default function UpdateOrderStatusDialog({ order }: UpdateOrderStatusDial
                             type="button"
                             variant="outline"
                             onClick={() => setOpen(false)}
-                            disabled={isPending}
+                            disabled={mutation.isPending}
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isPending}>
-                            {isPending && <Loader className="mr-2 h-4 w-4 animate-spin" />}
+                        <Button type="submit" disabled={mutation.isPending}>
+                            {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin" />}
                             Update Status
                         </Button>
                     </DialogFooter>
@@ -132,4 +132,3 @@ export default function UpdateOrderStatusDialog({ order }: UpdateOrderStatusDial
         </Dialog>
     )
 }
-

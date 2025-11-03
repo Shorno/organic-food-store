@@ -26,19 +26,49 @@ import {Input} from "@/components/ui/input"
 import {Switch} from "@/components/ui/switch"
 import ImageUploader from "@/components/ImageUploader"
 import {generateSlug} from "@/utils/generate-slug"
-import {useTransition} from "react"
 import {Loader} from "lucide-react"
 import {updateCategorySchema} from "@/lib/schemas/category.scheam"
 import {Category} from "@/db/schema/category"
 import updateCategory from "@/app/(admin)/admin/dashboard/category/actions/category/update-category"
+import {useMutation, useQueryClient} from "@tanstack/react-query"
 
 interface EditCategoryDialogProps {
     category: Category
 }
 
 export default function EditCategoryDialog({category}: EditCategoryDialogProps) {
-    const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: updateCategory,
+        onSuccess: (result) => {
+            if (!result.success) {
+                switch (result.status) {
+                    case 400:
+                        toast.error("Invalid category data.", {
+                            description: "Please check your form inputs.",
+                        })
+                        break
+                    case 401:
+                        toast.error("You are not authorized to perform this action.")
+                        break
+                    case 404:
+                        toast.error("Category not found.")
+                        break
+                    default:
+                        toast.error(result.error || "Something went wrong.")
+                }
+                return
+            }
+            queryClient.invalidateQueries({queryKey: ['admin-categories']})
+            toast.success(result.message)
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("An unexpected error occurred while updating the category.")
+        },
+    })
 
     const form = useForm({
         defaultValues: {
@@ -54,35 +84,7 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
             onSubmit: updateCategorySchema,
         },
         onSubmit: async ({value}) => {
-            startTransition(async () => {
-                try {
-                    const result = await updateCategory(value)
-                    if (!result.success) {
-                        switch (result.status) {
-                            case 400:
-                                toast.error("Invalid category data.", {
-                                    description: "Please check your form inputs.",
-                                })
-                                break
-                            case 401:
-                                toast.error("You are not authorized to perform this action.")
-                                break
-                            case 404:
-                                toast.error("Category not found.")
-                                break
-                            default:
-                                toast.error(result.error || "Something went wrong.")
-                        }
-                        console.error("Update category failed:", result)
-                        return
-                    }
-                    toast.success(result.message)
-                    setOpen(false)
-                } catch (error) {
-                    console.error("Unexpected error:", error)
-                    toast.error("An unexpected error occurred while updating the category.")
-                }
-            })
+            mutation.mutate(value)
         },
     })
 
@@ -257,15 +259,17 @@ export default function EditCategoryDialog({category}: EditCategoryDialogProps) 
                         type="button"
                         variant="outline"
                         onClick={() => setOpen(false)}
+                        disabled={mutation.isPending}
                     >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
                         form="edit-category-form"
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                     >
-                        {isPending ? <Loader className="animate-spin"/> : "Update Category"}
+                        {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
+                        Update Category
                     </Button>
                 </DialogFooter>
             </DialogContent>

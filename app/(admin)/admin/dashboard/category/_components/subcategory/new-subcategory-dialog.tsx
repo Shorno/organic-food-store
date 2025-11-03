@@ -26,10 +26,10 @@ import {Input} from "@/components/ui/input"
 import {Switch} from "@/components/ui/switch"
 import ImageUploader from "@/components/ImageUploader"
 import {generateSlug} from "@/utils/generate-slug"
-import {useTransition} from "react"
 import createSubcategory from "@/app/(admin)/admin/dashboard/category/actions/subcategory/create-subcategory"
 import {Loader} from "lucide-react"
 import {createSubcategorySchema} from "@/lib/schemas/category.scheam";
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 interface NewSubcategoryDialogProps {
     categoryId: number
@@ -37,8 +37,36 @@ interface NewSubcategoryDialogProps {
 }
 
 export default function NewSubcategoryDialog({ categoryId, categoryName }: NewSubcategoryDialogProps) {
-    const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: createSubcategory,
+        onSuccess: (result) => {
+            if (!result.success) {
+                switch (result.status) {
+                    case 400:
+                        toast.error("Invalid subcategory data.", {
+                            description: "Please check your form inputs.",
+                        })
+                        break
+                    case 401:
+                        toast.error("You are not authorized to perform this action.")
+                        break
+                    default:
+                        toast.error(result.error || "Something went wrong.")
+                }
+                return
+            }
+            queryClient.invalidateQueries({ queryKey: ['admin-subcategories', categoryId] })
+            toast.success(result.message)
+            form.reset()
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("An unexpected error occurred while creating the subcategory.")
+        },
+    })
 
     const form = useForm({
         defaultValues: {
@@ -54,33 +82,7 @@ export default function NewSubcategoryDialog({ categoryId, categoryName }: NewSu
             onSubmit: createSubcategorySchema,
         },
         onSubmit: async ({value}) => {
-            startTransition(async () => {
-                try {
-                    const result = await createSubcategory(value)
-                    if (!result.success) {
-                        switch (result.status) {
-                            case 400:
-                                toast.error("Invalid subcategory data.", {
-                                    description: "Please check your form inputs.",
-                                })
-                                break
-                            case 401:
-                                toast.error("You are not authorized to perform this action.")
-                                break
-                            default:
-                                toast.error(result.error || "Something went wrong.")
-                        }
-                        console.error("Create subcategory failed:", result)
-                        return
-                    }
-                    toast.success(result.message)
-                    form.reset()
-                    setOpen(false)
-                } catch (error) {
-                    console.error("Unexpected error:", error)
-                    toast.error("An unexpected error occurred while creating the subcategory.")
-                }
-            })
+            mutation.mutate(value)
         },
     })
 
@@ -99,9 +101,9 @@ export default function NewSubcategoryDialog({ categoryId, categoryName }: NewSu
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Create Subcategory for {categoryName}</DialogTitle>
+                    <DialogTitle>Create New Subcategory</DialogTitle>
                     <DialogDescription>
-                        Add a new subcategory to the {categoryName} category.
+                        Add a new subcategory under {categoryName}.
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -254,19 +256,18 @@ export default function NewSubcategoryDialog({ categoryId, categoryName }: NewSu
                     <Button
                         type="button"
                         variant="outline"
-                        onClick={() => {
-                            form.reset()
-                            setOpen(false)
-                        }}
+                        onClick={() => setOpen(false)}
+                        disabled={mutation.isPending}
                     >
                         Cancel
                     </Button>
                     <Button
                         type="submit"
                         form="new-subcategory-form"
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                     >
-                        {isPending ? <Loader className="animate-spin"/> : "Create Subcategory"}
+                        {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
+                        Create Subcategory
                     </Button>
                 </DialogFooter>
             </DialogContent>

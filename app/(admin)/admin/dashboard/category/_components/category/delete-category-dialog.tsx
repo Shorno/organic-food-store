@@ -16,46 +16,48 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import {useTransition} from "react"
 import {Loader} from "lucide-react"
 import deleteCategory from "@/app/(admin)/admin/dashboard/category/actions/category/delete-category"
 import {Category, SubCategory} from "@/db/schema/category"
+import {useMutation, useQueryClient} from "@tanstack/react-query"
 
 interface DeleteCategoryDialogProps {
     category: Category & { subCategory?: SubCategory[] }
 }
 
 export default function DeleteCategoryDialog({category}: DeleteCategoryDialogProps) {
-    const [isPending, startTransition] = useTransition()
     const [open, setOpen] = React.useState(false)
+    const queryClient = useQueryClient()
     const hasSubcategories = category.subCategory && category.subCategory.length > 0
     const subcategoryCount = category.subCategory?.length || 0
 
-    const handleDelete = () => {
-        startTransition(async () => {
-            try {
-                const result = await deleteCategory(category.id)
-                if (!result.success) {
-                    switch (result.status) {
-                        case 401:
-                            toast.error("You are not authorized to perform this action.")
-                            break
-                        case 404:
-                            toast.error("Category not found.")
-                            break
-                        default:
-                            toast.error(result.error || "Failed to delete category.")
-                    }
-                    console.error("Delete category failed:", result)
-                    return
+    const mutation = useMutation({
+        mutationFn: (id: number) => deleteCategory(id),
+        onSuccess: (result) => {
+            if (!result.success) {
+                switch (result.status) {
+                    case 401:
+                        toast.error("You are not authorized to perform this action.")
+                        break
+                    case 404:
+                        toast.error("Category not found.")
+                        break
+                    default:
+                        toast.error(result.error || "Failed to delete category.")
                 }
-                toast.success(result.message)
-                setOpen(false)
-            } catch (error) {
-                console.error("Unexpected error:", error)
-                toast.error("An unexpected error occurred while deleting the category.")
+                return
             }
-        })
+            queryClient.invalidateQueries({queryKey: ['admin-categories']})
+            toast.success(result.message)
+            setOpen(false)
+        },
+        onError: () => {
+            toast.error("An unexpected error occurred while deleting the category.")
+        },
+    })
+
+    const handleDelete = () => {
+        mutation.mutate(category.id)
     }
 
     return (
@@ -95,26 +97,17 @@ export default function DeleteCategoryDialog({category}: DeleteCategoryDialogPro
                 )}
 
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={mutation.isPending}>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={(e) => {
                             e.preventDefault()
                             handleDelete()
                         }}
-                        disabled={isPending}
+                        disabled={mutation.isPending}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                        {isPending ? (
-                            <>
-                                <Loader className="h-4 w-4 mr-2 animate-spin"/>
-                                Deleting...
-                            </>
-                        ) : (
-                            <>
-                                <Trash2 className="h-4 w-4 mr-2"/>
-                                Delete
-                            </>
-                        )}
+                        {mutation.isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
+                        Delete Category
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

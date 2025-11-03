@@ -2,8 +2,8 @@
 
 import {subCategory} from "@/db/schema/category"
 import {eq} from "drizzle-orm"
-import {revalidatePath} from "next/cache"
 import {db} from "@/db/config";
+import {revalidatePath} from "next/cache";
 
 export default async function deleteSubcategory(subcategoryId: number) {
     try {
@@ -25,9 +25,9 @@ export default async function deleteSubcategory(subcategoryId: number) {
             .delete(subCategory)
             .where(eq(subCategory.id, subcategoryId))
 
-        revalidatePath("/admin/dashboard/category")
+        // Revalidate only client-facing routes (not admin dashboard)
+        revalidatePath("/products")
         revalidatePath("/")
-
 
         return {
             success: true,

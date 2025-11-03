@@ -6,6 +6,8 @@ import SubcategoryTable from "@/app/(admin)/admin/dashboard/category/_components
 import {subcategoryColumns} from "@/app/(admin)/admin/dashboard/category/_components/subcategory/subcategory-columns";
 import getCategoryById from "@/app/(admin)/admin/dashboard/category/actions/category/get-category-by-id";
 import {notFound} from "next/navigation";
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { getQueryClient } from "@/utils/get-query-client";
 
 export default async function SubCategoryPage({params}: {
     params: Promise<{ categoryId: string }>
@@ -17,7 +19,13 @@ export default async function SubCategoryPage({params}: {
         notFound()
     }
 
-    const subcategories = await getSubcategories(Number(categoryId));
+    const queryClient = getQueryClient();
+
+    // Prefetch subcategories data on the server (don't await - non-blocking)
+    queryClient.prefetchQuery({
+        queryKey: ['admin-subcategories', Number(categoryId)],
+        queryFn: () => getSubcategories(Number(categoryId)),
+    });
 
     return (
         <div className="container mx-auto py-6">
@@ -35,12 +43,13 @@ export default async function SubCategoryPage({params}: {
                     Manage subcategories under the {category.name} category.
                 </p>
             </div>
-            <SubcategoryTable
-                columns={subcategoryColumns}
-                data={subcategories}
-                categoryId={Number(categoryId)}
-                categoryName={category.name}
-            />
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <SubcategoryTable
+                    columns={subcategoryColumns}
+                    categoryId={Number(categoryId)}
+                    categoryName={category.name}
+                />
+            </HydrationBoundary>
         </div>
     )
 }

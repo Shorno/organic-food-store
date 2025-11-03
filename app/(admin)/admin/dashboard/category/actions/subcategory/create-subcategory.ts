@@ -4,8 +4,8 @@ import {checkAuth} from "@/app/actions/auth/checkAuth"
 import {CreateSubcategoryFormValues, createSubcategorySchema} from "@/lib/schemas/category.scheam"
 import {z} from "zod"
 import {db} from "@/db/config"
-import {revalidatePath} from "next/cache"
 import {subCategory} from "@/db/schema";
+import {revalidatePath} from "next/cache";
 
 export type ActionResult<TData = unknown> =
     | {
@@ -48,15 +48,11 @@ export default async function createSubcategory(
 
         const validData = result.data
 
-
         const newSubcategory = await db.insert(subCategory).values(validData).returning()
 
-
-        revalidatePath("/admin/dashboard/category")
-        revalidatePath(`/admin/dashboard/category/${validData.categoryId}`)
+        // Revalidate only client-facing routes (not admin dashboard)
+        revalidatePath("/products")
         revalidatePath("/")
-
-
 
         return {
             success: true,
