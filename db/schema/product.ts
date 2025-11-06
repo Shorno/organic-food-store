@@ -67,4 +67,5 @@ export interface ProductWithRelations extends Product {
     subCategory?: {
         name: string;
     } | null;
+    images?: ProductImage[];
 }

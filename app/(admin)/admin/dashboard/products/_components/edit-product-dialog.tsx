@@ -25,6 +25,7 @@ import {Input} from "@/components/ui/input"
 import {updateProductSchema} from "@/lib/schemas/product.schema"
 import {Switch} from "@/components/ui/switch"
 import ImageUploader from "@/components/ImageUploader"
+import AdditionalImagesUploader from "@/components/AdditionalImagesUploader"
 import {generateSlug} from "@/utils/generate-slug"
 import {useState} from "react"
 import updateProduct from "@/app/(admin)/admin/dashboard/products/actions/update-product"
@@ -93,6 +94,7 @@ export default function EditProductDialog({product}: EditProductDialogProps) {
             price: product.price,
             stockQuantity: product.stockQuantity,
             image: product.image,
+            additionalImages: product.images?.map(img => img.imageUrl) || [] as string[],
             inStock: product.inStock,
             isFeatured: product.isFeatured,
         },
@@ -150,6 +152,33 @@ export default function EditProductDialog({product}: EditProductDialogProps) {
                                     />
                                     <FieldDescription>
                                         Upload a product image (max 5MB)
+                                    </FieldDescription>
+                                    {isInvalid && (
+                                        <FieldError errors={field.state.meta.errors}/>
+                                    )}
+                                </Field>
+                            )
+                        }}
+                    </form.Field>
+
+                    {/* Additional Images Uploader */}
+                    <form.Field name="additionalImages">
+                        {(field) => {
+                            const isInvalid =
+                                field.state.meta.isTouched && !field.state.meta.isValid
+                            return (
+                                <Field data-invalid={isInvalid}>
+                                    <FieldLabel htmlFor={field.name}>
+                                        Additional Images (Optional)
+                                    </FieldLabel>
+                                    <AdditionalImagesUploader
+                                        value={field.state.value}
+                                        onChange={field.handleChange}
+                                        folder="products/additional"
+                                        maxSizeMB={5}
+                                    />
+                                    <FieldDescription>
+                                        Upload additional images for the product (max 5MB each)
                                     </FieldDescription>
                                     {isInvalid && (
                                         <FieldError errors={field.state.meta.errors}/>

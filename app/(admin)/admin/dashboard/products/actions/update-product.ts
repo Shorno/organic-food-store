@@ -4,7 +4,7 @@ import {checkAuth} from "@/app/actions/auth/checkAuth";
 import {UpdateProductFormValues, updateProductSchema} from "@/lib/schemas/product.schema";
 import {z} from "zod";
 import {db} from "@/db/config";
-import {product} from "@/db/schema/product";
+import {product, productImage} from "@/db/schema/product";
 import {eq} from "drizzle-orm";
 import {revalidatePath} from "next/cache";
 
@@ -48,7 +48,7 @@ export default async function updateProduct(
         }
 
         const validData = result.data
-        const { id, ...updateData } = validData
+        const { id, additionalImages, ...updateData } = validData
 
         const updatedProduct = await db
             .update(product)
@@ -68,7 +68,22 @@ export default async function updateProduct(
             }
         }
 
-        // Revalidate only client-facing routes (not admin dashboard)
+        // Update additional images: delete existing and insert new ones
+        if (additionalImages !== undefined) {
+            // Delete existing additional images
+            await db.delete(productImage).where(eq(productImage.productId, id))
+
+            // Insert new additional images if provided
+            if (additionalImages.length > 0) {
+                await db.insert(productImage).values(
+                    additionalImages.map((imageUrl) => ({
+                        productId: id,
+                        imageUrl: imageUrl,
+                    }))
+                )
+            }
+        }
+
         revalidatePath("/products")
         revalidatePath("/")
 
@@ -77,6 +92,7 @@ export default async function updateProduct(
             status: 200,
             data: {
                 ...updatedProduct[0],
+                additionalImages,
                 subCategoryId: updatedProduct[0].subCategoryId ?? undefined,
             },
             message: "Product updated successfully",

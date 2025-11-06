@@ -11,13 +11,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {Badge} from "@/components/ui/badge"
-import {Product} from "@/db/schema/product"
+import {Product, ProductImage} from "@/db/schema/product"
 import {Category, SubCategory} from "@/db/schema/category"
 import EditProductDialog from "./edit-product-dialog"
 import DeleteProductDialog from "./delete-product-dialog"
 import { useTranslations } from "next-intl"
 
 export interface ProductWithRelations extends Product {
+    images: ProductImage[]
     category: Category
     subCategory: SubCategory | null
 }
