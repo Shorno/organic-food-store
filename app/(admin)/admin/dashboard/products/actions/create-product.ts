@@ -4,7 +4,7 @@ import {checkAuth} from "@/app/actions/auth/checkAuth";
 import {CreateProductFormValues, createProductSchema} from "@/lib/schemas/product.schema";
 import {z} from "zod";
 import {db} from "@/db/config";
-import {product} from "@/db/schema/product";
+import {product, productImage} from "@/db/schema/product";
 import {revalidatePath} from "next/cache";
 
 export type ActionResult<TData = unknown> =
@@ -47,14 +47,24 @@ export default async function createProduct(
         }
 
         const validData = result.data
+        const { additionalImages, ...productData } = validData
 
         const newProduct = await db.insert(product).values({
-            ...validData,
-            price: validData.price,
-            subCategoryId: validData.subCategoryId || null,
+            ...productData,
+            price: productData.price,
+            subCategoryId: productData.subCategoryId || null,
         }).returning()
 
-        // Revalidate only client-facing routes (not admin dashboard)
+        // Insert additional images if provided
+        if (additionalImages && additionalImages.length > 0) {
+            await db.insert(productImage).values(
+                additionalImages.map((imageUrl) => ({
+                    productId: newProduct[0].id,
+                    imageUrl: imageUrl,
+                }))
+            )
+        }
+
         revalidatePath("/products")
         revalidatePath("/")
 
@@ -63,6 +73,7 @@ export default async function createProduct(
             status: 201,
             data: {
                 ...newProduct[0],
+                additionalImages,
                 subCategoryId: newProduct[0].subCategoryId ?? undefined,
             },
             message: "Product created successfully",

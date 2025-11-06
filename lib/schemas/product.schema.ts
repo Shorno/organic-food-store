@@ -39,6 +39,10 @@ export const createProductSchema = z.object({
     image: z
         .url("Please enter a valid image URL.")
         .max(255, "Image URL must be at most 255 characters."),
+    additionalImages: z
+        .array(z.url("Please enter a valid image URL."))
+        .max(6, "You can upload a maximum of 6 additional images.")
+        .default([]),
     inStock: z.boolean().default(true),
     isFeatured: z.boolean().default(false),
 })
@@ -49,4 +53,3 @@ export const updateProductSchema = createProductSchema.extend({
 
 export type CreateProductFormValues = z.infer<typeof createProductSchema>
 export type UpdateProductFormValues = z.infer<typeof updateProductSchema>
-
