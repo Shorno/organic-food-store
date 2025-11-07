@@ -30,7 +30,7 @@ export async function getProducts(params: GetProductsParams) {
 
     if (category) {
         const categoryData = await db.query.category.findFirst({
-            where: (cat, { eq }) => eq(cat.slug, category),
+            where: (cat, {eq}) => eq(cat.slug, category),
         })
         if (categoryData) {
             conditions.push(eq(product.categoryId, categoryData.id))
@@ -39,7 +39,7 @@ export async function getProducts(params: GetProductsParams) {
 
     if (subcategory) {
         const subCategoryData = await db.query.subCategory.findFirst({
-            where: (subCat, { eq }) => eq(subCat.slug, subcategory),
+            where: (subCat, {eq}) => eq(subCat.slug, subcategory),
         })
         if (subCategoryData) {
             conditions.push(eq(product.subCategoryId, subCategoryData.id))
@@ -88,6 +88,7 @@ export async function getProducts(params: GetProductsParams) {
         with: {
             category: {
                 columns: {
+                    slug: true,
                     name: true,
                 },
             },

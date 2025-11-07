@@ -63,6 +63,7 @@ export type NewProductImage = typeof productImage.$inferInsert;
 export interface ProductWithRelations extends Product {
     category: {
         name: string;
+        slug: string;
     };
     subCategory?: {
         name: string;
