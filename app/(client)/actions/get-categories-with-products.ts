@@ -4,7 +4,6 @@
 import {db} from "@/db/config";
 
 export async function getCategoriesWithProducts(limit: number = 4) {
-    // Get all active categories
     const categories = await db.query.category.findMany({
         where: (category, { eq }) => eq(category.isActive, true),
         orderBy: (category, { asc }) => [asc(category.displayOrder)],
@@ -23,6 +22,7 @@ export async function getCategoriesWithProducts(limit: number = 4) {
                     category: {
                         columns: {
                             name: true,
+                            slug: true
                         },
                     },
                 },

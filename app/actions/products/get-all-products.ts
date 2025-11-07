@@ -6,7 +6,8 @@ export default async function getAllProducts(){
         with : {
             category: {
                 columns : {
-                    name : true
+                    name : true,
+                    slug : true
                 }
             },
         }
