@@ -30,6 +30,7 @@ interface CartState {
         clearCart: (isAuthenticated?: boolean) => Promise<void>;
         syncToDatabase: () => Promise<void>;
         loadFromDatabase: () => Promise<void>;
+        buyNow: (product: Product, quantity: number, isAuthenticated?: boolean) => Promise<void>;
     };
 }
 
@@ -236,6 +237,33 @@ const useCartStore = create<CartState>()(
                         console.error("Error loading cart from database:", error);
                     } finally {
                         set({ isSyncing: false });
+                    }
+                },
+                async buyNow(product: Product, quantity: number, isAuthenticated = false) {
+                    set(() => ({
+                        items: [],
+                        totalQuantity: 0,
+                        totalPrice: 0,
+                        isOpen: false,
+                    }));
+
+                    const newCartItem: CartItem = {
+                        ...product,
+                        quantity,
+                        subtotal: calculateSubtotal(Number(product.price), quantity)
+                    };
+
+                    set({
+                        items: [newCartItem],
+                        totalQuantity: quantity,
+                        totalPrice: newCartItem.subtotal,
+                        isOpen: true,
+                    });
+
+                    // Sync to database if authenticated
+                    if (isAuthenticated) {
+                        await clearDbCart(); // Clear existing cart in the database
+                        await addToCart(product.id, quantity);
                     }
                 },
             }

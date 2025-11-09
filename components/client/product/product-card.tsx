@@ -11,6 +11,7 @@ import {toast} from "sonner";
 import {useCartActions, useCartItems} from "@/stote/cart-sotre";
 import {formatPrice} from "@/utils/currency";
 import {authClient} from "@/lib/auth-client";
+import { useRouter } from "next/navigation"
 
 interface ProductCardProps {
     product: ProductWithRelations
@@ -18,8 +19,9 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
     const session = authClient.useSession();
+    const router = useRouter()
     const items = useCartItems()
-    const {addItem} = useCartActions()
+    const {addItem, buyNow} = useCartActions()
     const isAuthenticated = !!session.data?.user;
 
 
@@ -46,12 +48,20 @@ export function ProductCard({ product }: ProductCardProps) {
 
 
 
-    const handleBuyNow = (e: React.MouseEvent) => {
+    const handleBuyNow = async (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent navigation when clicking the button
         e.stopPropagation();
 
+        if (!product.inStock || product.stockQuantity === 0) {
+            toast.error("Out of stock");
+            return;
+        }
+
+        await buyNow(product, 1, isAuthenticated)
+
+        router.push("/checkout")
         toast.success("Proceeding to checkout", {
-            description: `Purchasing ${product.name} now.`,
+            description: `1 x ${product.name}`
         })
     }
 

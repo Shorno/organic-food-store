@@ -14,32 +14,34 @@ import {authClient} from "@/lib/auth-client";
 import Image from "next/image";
 import Link from "next/link";
 import {useForm} from "@tanstack/react-form";
-import {loginSchema} from "@/lib/schemas/auth.schema";
-import {useTransition} from "react";
-import {useRouter} from "next/navigation";
+import {signupSchema} from "@/lib/schemas/auth.schema";
 import {toast} from "sonner";
 import {Loader} from "lucide-react";
+import {useTransition} from "react";
+import {useRouter} from "next/navigation";
 
-export function LoginForm() {
+export function SignupForm() {
     const [isPending, startTransition] = useTransition();
     const router = useRouter()
 
     const form = useForm({
         defaultValues: {
+            name: "",
             email: "",
             password: "",
         },
         validators: {
-            onSubmit: loginSchema
+            onSubmit: signupSchema
         },
         onSubmit: async ({value}) => {
             startTransition(async () => {
-                await authClient.signIn.email({
+                await authClient.signUp.email({
                     email: value.email,
                     password: value.password,
+                    name: value.name
                 }, {
                     onSuccess: () => {
-                        toast.success("Logged in successfully");
+                        toast.success("Account created successfully!");
                         router.push("/")
                     },
                     onError: (ctx) => {
@@ -48,19 +50,19 @@ export function LoginForm() {
                 });
             })
         }
-    })
+    });
 
     const handleGithubLogin = async () => {
         await authClient.signIn.social({
             provider: "github",
-        })
-    }
+        });
+    };
 
     const handleGoogleLogin = async () => {
         await authClient.signIn.social({
             provider: "google",
-        })
-    }
+        });
+    };
 
     return (
         <div className={"flex flex-col gap-6"}>
@@ -76,11 +78,36 @@ export function LoginForm() {
                     >
                         <FieldGroup>
                             <div className="flex flex-col items-center gap-2 text-center">
-                                <h1 className="text-2xl font-bold">Welcome back</h1>
+                                <h1 className="text-2xl font-bold">Welcome to KhatiBazar</h1>
                                 <p className="text-muted-foreground text-balance">
-                                    Login to your KhaatiBazar account
+                                    Create your KhaatiBazar account
                                 </p>
                             </div>
+                            <form.Field name="name">
+                                {(field) => {
+                                    const isInvalid =
+                                        field.state.meta.isTouched && !field.state.meta.isValid;
+                                    return (
+                                        <Field data-invalid={isInvalid}>
+                                            <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                                            <Input
+                                                id={field.name}
+                                                name={field.name}
+                                                type="text"
+                                                placeholder="John Doe"
+                                                value={field.state.value}
+                                                onBlur={field.handleBlur}
+                                                onChange={(e) => field.handleChange(e.target.value)}
+                                                aria-invalid={isInvalid}
+                                                autoComplete="name"
+                                            />
+                                            {isInvalid && (
+                                                <FieldError errors={field.state.meta.errors}/>
+                                            )}
+                                        </Field>
+                                    );
+                                }}
+                            </form.Field>
 
                             {/* Email Field */}
                             <form.Field name="email">
@@ -100,7 +127,6 @@ export function LoginForm() {
                                                 onChange={(e) => field.handleChange(e.target.value)}
                                                 aria-invalid={isInvalid}
                                                 autoComplete="email"
-                                                disabled={isPending}
                                             />
                                             {isInvalid && (
                                                 <FieldError errors={field.state.meta.errors}/>
@@ -117,15 +143,7 @@ export function LoginForm() {
                                         field.state.meta.isTouched && !field.state.meta.isValid;
                                     return (
                                         <Field data-invalid={isInvalid}>
-                                            <div className="flex items-center">
-                                                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                                                <Link
-                                                    href="/forgot-password"
-                                                    className="ml-auto text-sm underline-offset-2 hover:underline"
-                                                >
-                                                    Forgot your password?
-                                                </Link>
-                                            </div>
+                                            <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                                             <Input
                                                 id={field.name}
                                                 name={field.name}
@@ -134,8 +152,7 @@ export function LoginForm() {
                                                 onBlur={field.handleBlur}
                                                 onChange={(e) => field.handleChange(e.target.value)}
                                                 aria-invalid={isInvalid}
-                                                autoComplete="current-password"
-                                                disabled={isPending}
+                                                autoComplete="new-password"
                                             />
                                             {isInvalid && (
                                                 <FieldError errors={field.state.meta.errors}/>
@@ -148,7 +165,7 @@ export function LoginForm() {
                             <Field>
                                 <Button type="submit" disabled={isPending} className="w-full">
                                     {isPending && <Loader className="mr-2 h-4 w-4 animate-spin"/>}
-                                    Login
+                                    Sign Up
                                 </Button>
                             </Field>
 
@@ -178,10 +195,8 @@ export function LoginForm() {
                             </Field>
 
                             <FieldDescription className="text-center">
-                                Don&apos;t have an account?{" "}
-                                <Link href="/signup" className="underline hover:underline-offset-2">
-                                    Sign up
-                                </Link>
+                                Already have an account? <Link href="/login"
+                                                               className="underline hover:underline-offset-2">Login</Link>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
@@ -196,5 +211,5 @@ export function LoginForm() {
                 </CardContent>
             </Card>
         </div>
-    )
+    );
 }
