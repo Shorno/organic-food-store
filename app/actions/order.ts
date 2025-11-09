@@ -180,26 +180,3 @@ export async function getOrderById(orderId: number) {
         return null
     }
 }
-
-export async function getUserOrders() {
-    try {
-        const session = await auth.api.getSession({
-            headers: await headers()
-        })
-
-        if (!session?.user?.id) {
-            return []
-        }
-
-        return await db.query.order.findMany({
-            where: (order, { eq }) => eq(order.userId, session.user.id),
-            with: {
-                items: true,
-            },
-            orderBy: (order, { desc }) => [desc(order.createdAt)],
-        })
-    } catch (error) {
-        console.error("Error fetching orders:", error)
-        return []
-    }
-}

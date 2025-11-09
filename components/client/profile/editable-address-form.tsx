@@ -1,19 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { useForm } from "@tanstack/react-form"
-import { CreditCard, Banknote } from "lucide-react"
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {useForm} from "@tanstack/react-form"
+import {Card, CardContent} from "@/components/ui/card"
 import {
     Field,
     FieldError,
     FieldGroup,
     FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import {Input} from "@/components/ui/input"
 import {
     Select,
     SelectContent,
@@ -21,61 +17,73 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import {addressSchema, ShippingFormData} from "@/lib/schemas/address.scheam"
-import {authClient} from "@/lib/auth-client";
-import {CITIES_WITH_AREAS} from "@/lib/data/city";
+import {Button} from "@/components/ui/button"
+import {addressSchema} from "@/lib/schemas/address.scheam"
+import {CITIES_WITH_AREAS} from "@/lib/data/city"
+import {type CustomerAddress} from "@/db/schema/customer-adress"
+import {updateCustomerInfo} from "@/app/(client)/(account)/actions/update-customer-info"
+import {useMutation, useQueryClient} from "@tanstack/react-query"
+import {toast} from "sonner"
+import {Loader2} from "lucide-react"
+import {User} from "better-auth";
 
-
-interface ShippingFormProps {
-    onValidSubmit: (data: ShippingFormData) => void
+interface EditableAddressFormProps {
+    customerInfo: CustomerAddress | null
+    user: User | null
 }
 
-export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
-    const session = authClient.useSession()
-    const [paymentType, setPaymentType] = React.useState<"online" | "cod">("online")
-    const [selectedCity, setSelectedCity] = React.useState<string>("")
-    const [availableAreas, setAvailableAreas] = React.useState<readonly string[]>([])
-    const user = session?.data?.user
+export default function EditableAddressForm({customerInfo, user}: EditableAddressFormProps) {
+    const [selectedCity, setSelectedCity] = React.useState<string>(customerInfo?.city || "")
+    const [availableAreas, setAvailableAreas] = React.useState<readonly string[]>(
+        customerInfo?.city ? CITIES_WITH_AREAS[customerInfo.city as keyof typeof CITIES_WITH_AREAS] || [] : []
+    )
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: updateCustomerInfo,
+        onSuccess: (data) => {
+            if (data.success) {
+                toast.success(data.message)
+                queryClient.invalidateQueries({queryKey: ['customerInfo']})
+            } else {
+                toast.error(data.message)
+            }
+        },
+        onError: () => {
+            toast.error("Failed to update address")
+        }
+    })
 
     const form = useForm({
         defaultValues: {
-            fullName: user?.name || "",
-            phone: "",
+            fullName: customerInfo?.fullName || "",
+            phone: customerInfo?.phone || "",
             email: user?.email || "",
-            city: "",
-            area: "",
-            postalCode: "",
-            addressLine: "",
-            country: "BD",
+            city: customerInfo?.city || "",
+            area: customerInfo?.area || "",
+            postalCode: customerInfo?.postalCode || "",
+            addressLine: customerInfo?.addressLine || "",
+            country: customerInfo?.country || "BD",
         },
         validators: {
             onChange: addressSchema,
         },
-        onSubmit: async ({ value }) => {
-            onValidSubmit({
-                ...value,
-                paymentType
-            })
+        onSubmit: async ({value}) => {
+            mutation.mutate(value)
         },
     })
 
-    // Update available areas when city changes
     const handleCityChange = (city: string) => {
         setSelectedCity(city)
         setAvailableAreas(CITIES_WITH_AREAS[city as keyof typeof CITIES_WITH_AREAS] || [])
         form.setFieldValue("city", city)
-        form.setFieldValue("area", "") // Reset area when city changes
+        form.setFieldValue("area", "")
     }
 
     return (
         <Card className="rounded-sm">
-            <CardHeader>
-                <CardTitle>Shipping Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                {/* Form Fields */}
+            <CardContent>
                 <form
-                    id="shipping-form"
                     onSubmit={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
@@ -106,7 +114,7 @@ export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
                                                 autoComplete="name"
                                             />
                                             {isInvalid && (
-                                                <FieldError errors={field.state.meta.errors} />
+                                                <FieldError errors={field.state.meta.errors}/>
                                             )}
                                         </Field>
                                     )
@@ -134,41 +142,13 @@ export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
                                                 autoComplete="tel"
                                             />
                                             {isInvalid && (
-                                                <FieldError errors={field.state.meta.errors} />
+                                                <FieldError errors={field.state.meta.errors}/>
                                             )}
                                         </Field>
                                     )
                                 }}
                             </form.Field>
                         </div>
-                        <form.Field name="email">
-                            {(field) => {
-                                const isInvalid =
-                                    field.state.meta.isTouched && !field.state.meta.isValid
-                                return (
-                                    <Field data-invalid={isInvalid}>
-                                        <FieldLabel htmlFor={field.name}>
-                                            Email *
-                                        </FieldLabel>
-                                        <Input
-                                            id={field.name}
-                                            name={field.name}
-                                            type="email"
-                                            value={field.state.value}
-                                            onBlur={field.handleBlur}
-                                            onChange={(e) => field.handleChange(e.target.value)}
-                                            aria-invalid={isInvalid}
-                                            placeholder="Enter email address"
-                                            autoComplete="email"
-                                        />
-                                        {isInvalid && (
-                                            <FieldError errors={field.state.meta.errors} />
-                                        )}
-                                    </Field>
-                                )
-                            }}
-                        </form.Field>
-
 
                         {/* City & Area - Two Columns */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -189,7 +169,7 @@ export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
                                                 }}
                                             >
                                                 <SelectTrigger id={field.name}>
-                                                    <SelectValue placeholder="Select city" />
+                                                    <SelectValue placeholder="Select city"/>
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {Object.keys(CITIES_WITH_AREAS).map((city) => (
@@ -200,7 +180,7 @@ export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
                                                 </SelectContent>
                                             </Select>
                                             {isInvalid && (
-                                                <FieldError errors={field.state.meta.errors} />
+                                                <FieldError errors={field.state.meta.errors}/>
                                             )}
                                         </Field>
                                     )
@@ -242,7 +222,7 @@ export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
                                                 </SelectContent>
                                             </Select>
                                             {isInvalid && (
-                                                <FieldError errors={field.state.meta.errors} />
+                                                <FieldError errors={field.state.meta.errors}/>
                                             )}
                                         </Field>
                                     )
@@ -271,7 +251,7 @@ export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
                                             autoComplete="street-address"
                                         />
                                         {isInvalid && (
-                                            <FieldError errors={field.state.meta.errors} />
+                                            <FieldError errors={field.state.meta.errors}/>
                                         )}
                                     </Field>
                                 )
@@ -300,7 +280,7 @@ export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
                                                 autoComplete="postal-code"
                                             />
                                             {isInvalid && (
-                                                <FieldError errors={field.state.meta.errors} />
+                                                <FieldError errors={field.state.meta.errors}/>
                                             )}
                                         </Field>
                                     )
@@ -308,45 +288,25 @@ export default function ShippingForm({ onValidSubmit }: ShippingFormProps) {
                             </form.Field>
                         </div>
                     </FieldGroup>
+
+                    {/* Submit Button */}
+                    <div className="flex justify-end pt-4">
+                        <Button
+                            type="submit"
+                            disabled={mutation.isPending}
+                            className="min-w-[120px]"
+                        >
+                            {mutation.isPending ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                                    Updating...
+                                </>
+                            ) : (
+                                "Update Info"
+                            )}
+                        </Button>
+                    </div>
                 </form>
-
-                {/* Payment Method Selection - At the End */}
-                <div className="pt-4 border-t">
-                    <h3 className="text-sm font-semibold mb-3">Payment Method</h3>
-                    <RadioGroup
-                        value={paymentType}
-                        onValueChange={(value: "online" | "cod") => setPaymentType(value)}
-                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                        <div>
-                            <RadioGroupItem value="online" id="online" className="peer sr-only" />
-                            <Label
-                                htmlFor="online"
-                                className="flex items-center gap-3 rounded-lg border-2 p-4 cursor-pointer hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-accent transition-all"
-                            >
-                                <CreditCard className="h-5 w-5" />
-                                <div className="flex-1">
-                                    <span className="font-medium block">Online Payment</span>
-                                    <span className="text-xs text-muted-foreground">SSLCommerz</span>
-                                </div>
-                            </Label>
-                        </div>
-
-                        <div>
-                            <RadioGroupItem value="cod" id="cod" className="peer sr-only" />
-                            <Label
-                                htmlFor="cod"
-                                className="flex items-center gap-3 rounded-lg border-2 p-4 cursor-pointer hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-accent transition-all"
-                            >
-                                <Banknote className="h-5 w-5" />
-                                <div className="flex-1">
-                                    <span className="font-medium block">Cash on Delivery</span>
-                                    <span className="text-xs text-muted-foreground">Pay on arrival</span>
-                                </div>
-                            </Label>
-                        </div>
-                    </RadioGroup>
-                </div>
             </CardContent>
         </Card>
     )

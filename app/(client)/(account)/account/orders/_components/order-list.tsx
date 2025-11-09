@@ -1,21 +1,8 @@
 import OrderCard from "./order-card"
-
-interface Order {
-    id: number
-    orderNumber: string
-    status: string
-    totalAmount: string
-    createdAt: Date
-    items: Array<{
-        id: number
-        productName: string
-        productImage: string
-        quantity: number
-    }>
-}
+import { type CustomerOrder } from "@/app/(client)/(account)/actions/customer-orders"
 
 interface OrdersListProps {
-    orders: Order[]
+    orders: CustomerOrder[]
 }
 
 export default function OrdersList({ orders }: OrdersListProps) {
