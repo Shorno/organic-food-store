@@ -1,7 +1,6 @@
 import {pgTable, serial, varchar} from "drizzle-orm/pg-core";
 import {timestamps} from "@/db/schema/columns.helpers";
 import {user} from "@/db/schema/auth-schema";
-import * as z from "zod";
 import {relations} from "drizzle-orm";
 
 export const customerAddress = pgTable("customer_address", {
@@ -28,4 +27,4 @@ export const customerAddressRelations = relations(customerAddress, ({ one }) => 
     }),
 }));
 
-export type CustomerAddressFormData = z.infer<typeof customerAddress>;
+export type CustomerAddress = typeof customerAddress.$inferSelect

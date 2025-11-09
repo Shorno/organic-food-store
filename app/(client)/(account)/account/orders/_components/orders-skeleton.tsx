@@ -1,42 +1,36 @@
-// app/(client)/(account)/account/orders/_components/orders-loading.tsx
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-
 export default function OrdersLoading() {
     return (
         <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-                <Card key={i}>
-                    <CardHeader>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div className="space-y-2 flex-1">
-                                <Skeleton className="h-5 sm:h-6 w-32 sm:w-40" />
-                                <Skeleton className="h-3 sm:h-4 w-40 sm:w-48" />
-                            </div>
-                            <Skeleton className="h-6 w-20 self-start sm:self-auto" />
+                <div
+                    key={i}
+                    className="border rounded-lg p-6 animate-pulse"
+                >
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="space-y-2">
+                            <div className="h-5 bg-muted rounded w-32"></div>
+                            <div className="h-4 bg-muted rounded w-24"></div>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {/* Items Preview Skeleton */}
-                            <div className="flex gap-2">
-                                {[1, 2, 3, 4].map((j) => (
-                                    <Skeleton key={j} className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 rounded-md" />
-                                ))}
-                            </div>
+                        <div className="h-6 bg-muted rounded w-20"></div>
+                    </div>
 
-                            {/* Summary Skeleton */}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-4 border-t gap-3">
-                                <div className="space-y-2">
-                                    <Skeleton className="h-3 sm:h-4 w-24" />
-                                    <Skeleton className="h-6 sm:h-7 w-28" />
-                                </div>
-                                <Skeleton className="h-10 w-full sm:w-32" />
+                    <div className="space-y-3">
+                        <div className="flex gap-4">
+                            <div className="h-16 w-16 bg-muted rounded"></div>
+                            <div className="flex-1 space-y-2">
+                                <div className="h-4 bg-muted rounded w-3/4"></div>
+                                <div className="h-4 bg-muted rounded w-1/2"></div>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t flex justify-between">
+                        <div className="h-4 bg-muted rounded w-24"></div>
+                        <div className="h-5 bg-muted rounded w-20"></div>
+                    </div>
+                </div>
             ))}
         </div>
     )
 }
+

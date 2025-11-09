@@ -5,23 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { formatPrice } from "@/utils/currency"
 import OrderItemsPreview from "@/app/(client)/(account)/account/orders/_components/order-item-preview";
-
-interface Order {
-    id: number
-    orderNumber: string
-    status: string
-    totalAmount: string
-    createdAt: Date
-    items: Array<{
-        id: number
-        productName: string
-        productImage: string
-        quantity: number
-    }>
-}
+import { type CustomerOrder } from "@/app/(client)/(account)/actions/customer-orders"
 
 interface OrderCardProps {
-    order: Order
+    order: CustomerOrder
 }
 
 const statusVariants = {
