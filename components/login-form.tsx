@@ -50,11 +50,6 @@ export function LoginForm() {
         }
     })
 
-    const handleGithubLogin = async () => {
-        await authClient.signIn.social({
-            provider: "github",
-        })
-    }
 
     const handleGoogleLogin = async () => {
         await authClient.signIn.social({
@@ -156,7 +151,7 @@ export function LoginForm() {
                                 Or continue with
                             </FieldSeparator>
 
-                            <Field className="grid grid-cols-2 gap-4">
+                            <Field className="w-full">
                                 <Button variant="outline" type="button" onClick={handleGoogleLogin}>
                                     <Image src={"/logos/google.svg"}
                                            alt="Google Logo"
@@ -165,15 +160,6 @@ export function LoginForm() {
                                            height={20}
                                     />
                                     <span className="sr-only">Login with Google</span>
-                                </Button>
-                                <Button variant="outline" type="button" onClick={handleGithubLogin}>
-                                    <Image src={"/logos/github.svg"}
-                                           alt="GitHub Logo"
-                                           className="h-5 w-5"
-                                           width={20}
-                                           height={20}
-                                    />
-                                    <span className="sr-only">Login with GitHub</span>
                                 </Button>
                             </Field>
 
