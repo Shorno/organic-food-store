@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { ShoppingCart, Zap } from "lucide-react"
+import {Loader2, ShoppingCart, Zap} from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import {useCartActions, useCartItems} from "@/stote/cart-sotre";
 import {formatPrice} from "@/utils/currency";
 import {authClient} from "@/lib/auth-client";
 import { useRouter } from "next/navigation"
+import {useTransition} from "react";
 
 interface ProductCardProps {
     product: ProductWithRelations
@@ -19,6 +20,8 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
     const session = authClient.useSession();
+    const [isPending, startTransition] = useTransition()
+
     const router = useRouter()
     const items = useCartItems()
     const {addItem, buyNow} = useCartActions()
@@ -49,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
 
     const handleBuyNow = async (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent navigation when clicking the button
+        e.preventDefault();
         e.stopPropagation();
 
         if (!product.inStock || product.stockQuantity === 0) {
@@ -57,11 +60,12 @@ export function ProductCard({ product }: ProductCardProps) {
             return;
         }
 
-        await buyNow(product, 1, isAuthenticated)
-
-        router.push("/checkout")
-        toast.success("Proceeding to checkout", {
-            description: `1 x ${product.name}`
+        startTransition(async () => {
+            await buyNow(product, 1, isAuthenticated)
+            toast.success("Proceeding to checkout", {
+                description: `1 x ${product.name}`
+            })
+            router.push("/checkout")
         })
     }
 
@@ -116,11 +120,20 @@ export function ProductCard({ product }: ProductCardProps) {
 
                         <Button
                             onClick={handleBuyNow}
-                            disabled={!product.inStock}
+                            disabled={!product.inStock || isPending}
                             className="flex-1 gap-2 hover:scale-105 transition-all duration-300 disabled:hover:scale-100"
                         >
-                            <Zap size={16} />
-                            Buy Now
+                            {isPending ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Processing...
+                                </>
+                            ) : (
+                                <>
+                                    <Zap size={16} />
+                                    Buy Now
+                                </>
+                            )}
                         </Button>
                     </div>
                 </CardContent>

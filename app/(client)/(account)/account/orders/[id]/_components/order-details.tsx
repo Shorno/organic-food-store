@@ -5,7 +5,6 @@ import OrderItemsSection from "@/app/(client)/(account)/account/orders/[id]/_com
 import OrderSummarySection from "@/app/(client)/(account)/account/orders/[id]/_components/order-summery-section";
 import CustomerInfoSection from "@/app/(client)/(account)/account/orders/[id]/_components/customer-info-section";
 import ShippingSection from "@/app/(client)/(account)/account/orders/[id]/_components/shipping-section";
-import PaymentSection from "@/app/(client)/(account)/account/orders/[id]/_components/payment-section";
 import {getOrderById} from "@/app/actions/order";
 import {notFound} from "next/navigation";
 
@@ -35,7 +34,6 @@ export default  async function OrderDetailContent({orderId }: {orderId: number})
                     <OrderSummarySection order={order} />
                     <CustomerInfoSection order={order} />
                     <ShippingSection order={order} />
-                    <PaymentSection />
                 </div>
             </div>
         </div>
