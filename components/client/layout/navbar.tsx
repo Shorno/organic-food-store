@@ -64,7 +64,9 @@ export default function Navbar({categories}: NavbarProps) {
 
                     {/* Right side buttons */}
                     <div className={"flex justify-center items-center gap-4 ml-auto lg:ml-0"}>
-                        <ModeToggle/>
+                        <div className={"hidden md:block"}>
+                            <ModeToggle/>
+                        </div>
                         <UserButton/>
                         <CartDrawer/>
                     </div>
