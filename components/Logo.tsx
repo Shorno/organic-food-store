@@ -1,10 +1,18 @@
-import Image from "next/image";
+interface LogoProps {
+    className?: string;
+    showTagline?: boolean;
+}
 
-export default function Logo({
-                                 width = 200,
-                                 height = 150
-                             }) {
+export default function Logo({className = '', showTagline = true }: LogoProps) {
     return (
-        <Image src={"/logo.svg"} alt={"khaatibazar logo"} width={width} height={height} className={"w-40 md:w-50"}/>
-    )
+        <div className={`flex flex-col items-start ${className}`}>
+            <div className={`font-bold text-2xl sm:text-3xl lg:text-4xl text-primary`}>
+                <span className="text-green-600">Khaati</span>
+                <span className="text-orange-500"> Bazar</span>
+            </div>
+            {showTagline && (
+                <span className="text-xs md:text-sm text-gray-500">বিশুদ্ধতায় আপোষহীন</span>
+            )}
+        </div>
+    );
 }
