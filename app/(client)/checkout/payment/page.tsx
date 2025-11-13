@@ -7,6 +7,12 @@ import {getOrderById} from "@/app/actions/order"
 import {formatPrice} from "@/utils/currency"
 import Image from "next/image"
 import PaymentButton from "@/app/(client)/checkout/payment/_components/payment-button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Payment",
+    description: "Complete your payment to finalize your order.",
+};
 
 interface PaymentPageProps {
     searchParams: Promise<{ orderId?: string }>
@@ -142,4 +148,3 @@ export default async function PaymentPage({searchParams}: PaymentPageProps) {
         </div>
     )
 }
-

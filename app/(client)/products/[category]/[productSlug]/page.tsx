@@ -9,10 +9,50 @@ import { formatPrice } from "@/utils/currency"
 import getProductBySlug from "@/app/actions/products/get-product-by-slug"
 import { ProductImageGallery } from "@/components/client/product/product-image-gallery"
 import { ProductDetailsActions } from "@/components/client/product/product-details-actions"
+import type {Metadata} from "next";
 
 interface ProductDetailsPageProps {
     params: Promise<{ category: string; productSlug: string }>
 }
+
+
+export async function generateMetadata({ params }: ProductDetailsPageProps): Promise<Metadata> {
+    const { productSlug } = await params
+
+    const product = await getProductBySlug(productSlug)
+
+    if (!product) {
+        return {
+            title: 'Product Not Found'
+        }
+    }
+
+    return {
+        title: product.name,
+        description: `${product.name} - ${product.category.name}. Price: ${formatPrice(product.price)}`,
+        openGraph: {
+            title: product.name,
+            description: `${product.name} - ${product.category.name}. Price: ${formatPrice(product.price)}`,
+            images: [
+                {
+                    url: product.name,
+                    width: 1200,
+                    height: 630,
+                    alt: product.name,
+                }
+            ],
+            type: 'website',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: product.name,
+            description: `${product.name} - ${product.category.name}`,
+            images: [product.image],
+        },
+    }
+}
+
+
 
 export default async function ProductDetailsPage({ params }: ProductDetailsPageProps) {
     const {productSlug } = await params

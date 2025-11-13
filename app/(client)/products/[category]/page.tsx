@@ -5,6 +5,7 @@ import { ProductsFilter } from "@/components/client/product/products-filter"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getCategoryBySlug } from "@/app/(client)/actions/get-category-by-slug"
 import getCategoryWithSubcategory from "@/app/(client)/actions/get-category-with-subcategory"
+import {Metadata} from "next";
 
 
 export const revalidate = 3600
@@ -20,6 +21,38 @@ interface CategoryProductsPageProps {
         search?: string
     }>
 }
+
+export async function generateMetadata({ params, searchParams }: CategoryProductsPageProps): Promise<Metadata> {
+    const { category: categorySlug } = await params
+    const filters = await searchParams
+
+    const category = await getCategoryBySlug(categorySlug)
+
+    if (!category) {
+        return {
+            title: 'Category Not Found'
+        }
+    }
+
+    let title = category.name
+    if (filters.subcategory) {
+        const capitalizedSubcategory = filters.subcategory.charAt(0).toUpperCase() + filters.subcategory.slice(1)
+        title += ` - ${capitalizedSubcategory}`
+    }
+    if (filters.search) {
+        title += ` - Search: ${filters.search}`
+    }
+
+    return {
+        title: title,
+        description: `Explore our ${category.name.toLowerCase()} collection. Find the best products in this category.`,
+        openGraph: {
+            title: title,
+            description: `Explore our ${category.name.toLowerCase()} collection`,
+        },
+    }
+}
+
 
 export async function generateStaticParams() {
     const categories = await getCategoryWithSubcategory()

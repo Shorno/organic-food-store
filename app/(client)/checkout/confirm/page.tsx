@@ -7,6 +7,12 @@ import { getOrderById } from "@/app/actions/order"
 import { formatPrice } from "@/utils/currency"
 import Link from "next/link"
 import Image from "next/image"
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Order Confirmation",
+    description: "Your order has been confirmed. View your order details and status.",
+};
 
 interface OrderConfirmationPageProps {
     searchParams: Promise<{orderId?: string}>

@@ -1,6 +1,12 @@
 import { Suspense } from "react"
 import ProfileContent from "@/components/client/profile/profile-content";
 import ProfileSkeleton from "@/components/client/profile/profile-skeleton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "My Profile",
+    description: "Manage your profile information and account settings.",
+};
 
 export default  function  ProfilePage() {
     return (
@@ -12,4 +18,3 @@ export default  function  ProfilePage() {
         </div>
     )
 }
-
