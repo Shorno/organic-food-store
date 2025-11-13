@@ -1,5 +1,11 @@
 import OrdersContent from "@/app/(client)/(account)/account/orders/_components/orders-content";
+import type { Metadata } from "next";
 
+
+export const metadata: Metadata = {
+    title: "My Orders",
+    description: "View and track all your orders.",
+};
 
 export default function OrdersPage() {
     return (

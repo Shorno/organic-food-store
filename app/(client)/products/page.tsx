@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import { ProductsGrid } from "@/components/client/product/products-grid"
 import { ProductsFilter } from "@/components/client/product/products-filter"
 import { Skeleton } from "@/components/ui/skeleton"
+import type {Metadata} from "next";
 
 interface ProductsPageProps {
     searchParams: Promise<{
@@ -14,6 +15,11 @@ interface ProductsPageProps {
         search?: string
     }>
 }
+
+export const metadata: Metadata = {
+    title : "Products"
+};
+
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
     const params = await searchParams

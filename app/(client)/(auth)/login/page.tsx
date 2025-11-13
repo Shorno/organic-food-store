@@ -1,4 +1,10 @@
 import {LoginForm} from "@/components/login-form";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Login",
+    description: "Sign in to your KhaatiBazar account to manage your orders and profile.",
+};
 
 export default function LoginPage() {
     return (
