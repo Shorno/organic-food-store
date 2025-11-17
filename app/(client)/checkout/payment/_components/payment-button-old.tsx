@@ -11,7 +11,7 @@ interface ProceedPaymentButtonProps {
     orderId: number;
 }
 
-export default function PaymentButton({orderId}: ProceedPaymentButtonProps) {
+export default function PaymentButtonOld({orderId}: ProceedPaymentButtonProps) {
     const [isPending, startTransition] = useTransition();
     const router = useRouter()
 

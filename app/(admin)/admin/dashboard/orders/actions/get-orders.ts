@@ -14,7 +14,6 @@ export async function getOrders() {
             orderBy: desc(order.createdAt),
         })
 
-        // Transform to match your OrderWithDetails interface
         return orders.map(order => ({
             ...order,
             itemCount: order.items.length,

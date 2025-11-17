@@ -12,25 +12,25 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import {ListIcon, ShoppingBagIcon, SlidersIcon, WarehouseIcon} from "lucide-react";
+import {ListIcon, ShoppingBagIcon, SlidersIcon, TimerIcon, WarehouseIcon} from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import {authClient} from "@/lib/auth-client";
 import UserNavSkeleton from "@/components/dashboard/user-nav-skeleton";
 
 const navLinks = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
     navMain: [
+
         {
             title: "Orders",
             url: "/admin/dashboard/orders",
             icon: ShoppingBagIcon,
         },
-
+        {
+            title: "Payments",
+            url: "/admin/dashboard/payments",
+            icon: TimerIcon,
+        },
         {
             title: "Products",
             url: "/admin/dashboard/products",

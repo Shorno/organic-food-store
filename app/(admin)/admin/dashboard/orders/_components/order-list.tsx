@@ -14,6 +14,8 @@ export default function OrderList() {
     queryFn: getOrders,
   });
 
+  console.log(orders)
+
   if (isLoading) {
     return <TableSkeleton />;
   }

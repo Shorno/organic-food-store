@@ -8,6 +8,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
+    DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Order } from "@/db/schema/order"
@@ -16,6 +17,7 @@ import { Payment } from "@/db/schema/payment"
 import ViewOrderDialog from "./view-order-dialog"
 import UpdateOrderStatusDialog from "./update-order-status-dialog"
 import DeleteOrderDialog from "./delete-order-dialog"
+import VerifyPaymentDialog from "./verify-payment-dialog"
 import { useTranslations } from "next-intl"
 
 export interface OrderWithDetails extends Order {
@@ -203,6 +205,8 @@ export function useOrderColumns() {
                                     orderId={order.id}
                                     orderNumber={order.orderNumber}
                                 />
+                                <DropdownMenuSeparator />
+                                <VerifyPaymentDialog order={order} />
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
