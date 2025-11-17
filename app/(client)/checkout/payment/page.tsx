@@ -6,13 +6,13 @@ import {Badge} from "@/components/ui/badge"
 import {getOrderById} from "@/app/actions/order"
 import {formatPrice} from "@/utils/currency"
 import Image from "next/image"
-import PaymentButton from "@/app/(client)/checkout/payment/_components/payment-button";
-import type { Metadata } from "next";
+import type { Metadata } from "next"
+import PaymentMethodAndButton from "@/app/(client)/checkout/payment/_components/payment-method-and-button";
 
 export const metadata: Metadata = {
     title: "Payment",
     description: "Complete your payment to finalize your order.",
-};
+}
 
 interface PaymentPageProps {
     searchParams: Promise<{ orderId?: string }>
@@ -31,7 +31,7 @@ export default async function PaymentPage({searchParams}: PaymentPageProps) {
         notFound()
     }
 
-    const order = await getOrderById(id);
+    const order = await getOrderById(id)
 
     if (!order) {
         notFound()
@@ -135,15 +135,7 @@ export default async function PaymentPage({searchParams}: PaymentPageProps) {
                     </CardContent>
                 </Card>
 
-
-                {/* Action Buttons */}
-                <div className="space-y-3">
-                    <PaymentButton orderId={id}/>
-                    <p className="text-xs text-center text-muted-foreground">
-                        By proceeding, you agree to our terms and conditions.
-                        Your payment is secured with SSL encryption.
-                    </p>
-                </div>
+                <PaymentMethodAndButton orderId={id}/>
             </div>
         </div>
     )
