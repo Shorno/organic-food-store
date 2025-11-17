@@ -8,7 +8,9 @@ import {toast} from "sonner";
 import Image from "next/image";
 import {PAYMENT_CONFIG, MERCHANT_INFO} from "@/lib/payment-config";
 import {OrderData} from "@/lib/types/order";
-import {useState} from "react";
+import {useState, useTransition} from "react";
+import {submitManualPayment} from "@/app/actions/manual-payment";
+import {useRouter} from "next/navigation";
 
 interface RocketVerificationCardProps {
     order: OrderData;
@@ -18,13 +20,15 @@ export default function RocketVerificationCard({order}: RocketVerificationCardPr
     const config = PAYMENT_CONFIG.rocket;
     const [senderNumber, setSenderNumber] = useState("");
     const [transactionId, setTransactionId] = useState("");
+    const [isPending, startTransition] = useTransition();
+    const router = useRouter();
 
     const handleCopy = () => {
         navigator.clipboard.writeText(config.merchantNumber);
         toast.success("Copied to clipboard");
     };
 
-    const handleVerify = () => {
+    const handleVerify = async () => {
         if (!senderNumber.trim()) {
             toast.error("Please enter your Rocket number");
             return;
@@ -34,7 +38,26 @@ export default function RocketVerificationCard({order}: RocketVerificationCardPr
             return;
         }
 
-        toast.info("Verification in progress...");
+        startTransition(async () => {
+            try {
+                const result = await submitManualPayment({
+                    orderId: order.id,
+                    transactionId: transactionId.trim(),
+                    senderNumber: senderNumber.trim(),
+                    paymentMethod: "rocket",
+                });
+
+                if (result.success) {
+                    toast.success(result.message || "Payment submitted successfully!");
+                    // Redirect to success page or order confirmation
+                    router.push(`/checkout/payment/pending?orderId=${order.id}`);
+                } else {
+                    toast.error(result.error || "Failed to submit payment");
+                }
+            } catch {
+                toast.error("An error occurred. Please try again.");
+            }
+        });
     };
 
     return (
@@ -90,6 +113,7 @@ export default function RocketVerificationCard({order}: RocketVerificationCardPr
                                 onChange={(e) => setSenderNumber(e.target.value)}
                                 className="bg-white text-black placeholder:text-gray-400"
                                 maxLength={11}
+                                disabled={isPending}
                             />
                         </div>
 
@@ -102,6 +126,7 @@ export default function RocketVerificationCard({order}: RocketVerificationCardPr
                                 value={transactionId}
                                 onChange={(e) => setTransactionId(e.target.value)}
                                 className="bg-white text-black placeholder:text-gray-400"
+                                disabled={isPending}
                             />
                         </div>
                     </div>
@@ -153,9 +178,14 @@ export default function RocketVerificationCard({order}: RocketVerificationCardPr
                 </div>
 
                 {/* Verify Button */}
-                <Button onClick={handleVerify} className="w-full" size="lg">
+                <Button
+                    onClick={handleVerify}
+                    className="w-full"
+                    size="lg"
+                    disabled={isPending}
+                >
                     <CheckCircle2 className="mr-2 h-5 w-5" />
-                    VERIFY PAYMENT
+                    {isPending ? "SUBMITTING..." : "VERIFY PAYMENT"}
                 </Button>
             </CardContent>
         </Card>
