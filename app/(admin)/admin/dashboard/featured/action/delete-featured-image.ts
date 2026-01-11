@@ -1,10 +1,10 @@
 "use server"
 
-import { checkAuth } from "../../../../../../../b2b/app/(admin)/actions/auth/checkAuth"
 import { db } from "@/db/config"
 import { revalidatePath } from "next/cache"
 import {featuredImages} from "@/db/schema";
 import {eq} from "drizzle-orm";
+import {checkAuth} from "@/app/actions/auth/checkAuth";
 
 
 export default async function deleteFeaturedImage(imageId: number) {

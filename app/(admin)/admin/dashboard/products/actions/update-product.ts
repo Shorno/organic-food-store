@@ -1,12 +1,12 @@
 "use server"
 
-import {checkAuth} from "../../../../../../../b2b/app/(admin)/actions/auth/checkAuth";
 import {UpdateProductFormValues, updateProductSchema} from "@/lib/schemas/product.schema";
 import {z} from "zod";
 import {db} from "@/db/config";
 import {product, productImage} from "@/db/schema/product";
 import {eq} from "drizzle-orm";
 import {revalidatePath} from "next/cache";
+import {checkAuth} from "@/app/actions/auth/checkAuth";
 
 export type ActionResult<TData = unknown> =
     | {

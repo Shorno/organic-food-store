@@ -1,11 +1,11 @@
 "use server"
 
-import {checkAuth} from "../../../../../b2b/app/(admin)/actions/auth/checkAuth";
 import {db} from "@/db/config";
 import {eq} from "drizzle-orm";
 import {customerAddress} from "@/db/schema";
 import {addressSchema} from "@/lib/schemas/address.scheam";
 import {revalidatePath} from "next/cache";
+import {checkAuth} from "@/app/actions/auth/checkAuth";
 
 export async function updateCustomerInfo(data: unknown) {
     const session = await checkAuth()

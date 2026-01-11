@@ -1,8 +1,8 @@
 "use server"
-import {checkAuth} from "../../../b2b/app/(admin)/actions/auth/checkAuth";
 import {db} from "@/db/config";
 import {order, payment} from "@/db/schema";
 import {and, eq} from "drizzle-orm";
+import {checkAuth} from "@/app/actions/auth/checkAuth";
 
 const SSLCOMMERZ_CONFIG = {
     storeId: process.env.STORE_ID!,

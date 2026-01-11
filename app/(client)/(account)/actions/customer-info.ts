@@ -1,10 +1,10 @@
 "use server"
 
-import {checkAuth} from "../../../../../b2b/app/(admin)/actions/auth/checkAuth";
 import {db} from "@/db/config";
 import {eq, desc} from "drizzle-orm";
 import {CustomerAddress, customerAddress} from "@/db/schema";
 import {order} from "@/db/schema/order";
+import {checkAuth} from "@/app/actions/auth/checkAuth";
 
 
 export async function getCustomerInfo(): Promise<CustomerAddress | null> {

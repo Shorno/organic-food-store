@@ -1,9 +1,9 @@
 "use server"
 
-import {checkAuth} from "../../../../b2b/app/(admin)/actions/auth/checkAuth"
 import {db} from "@/db/config"
 import {Order, order, Payment, payment} from "@/db/schema"
 import {and, eq} from "drizzle-orm"
+import {checkAuth} from "@/app/actions/auth/checkAuth";
 
 export type OrderStatusResponse =
     | {
