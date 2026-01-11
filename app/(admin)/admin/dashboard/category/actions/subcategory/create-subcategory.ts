@@ -1,11 +1,11 @@
 "use server"
 
-import {checkAuth} from "../../../../../../../../b2b/app/(admin)/actions/auth/checkAuth"
 import {CreateSubcategoryFormValues, createSubcategorySchema} from "@/lib/schemas/category.scheam"
 import {z} from "zod"
 import {db} from "@/db/config"
 import {subCategory} from "@/db/schema";
 import {revalidatePath} from "next/cache";
+import {checkAuth} from "@/app/actions/auth/checkAuth";
 
 export type ActionResult<TData = unknown> =
     | {
