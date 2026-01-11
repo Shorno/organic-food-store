@@ -3,7 +3,7 @@
 import {db} from "@/db/config";
 import {order, payment, PaymentWithOrder} from "@/db/schema";
 import {and, desc, eq, isNotNull} from "drizzle-orm";
-import {checkAuth} from "@/app/actions/auth/checkAuth";
+import {checkAuth} from "../../../../../../../b2b/app/(admin)/actions/auth/checkAuth";
 
 interface VerifyManualPaymentData {
     paymentId: number;

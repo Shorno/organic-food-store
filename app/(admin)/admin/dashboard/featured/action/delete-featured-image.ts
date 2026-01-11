@@ -1,6 +1,6 @@
 "use server"
 
-import { checkAuth } from "@/app/actions/auth/checkAuth"
+import { checkAuth } from "../../../../../../../b2b/app/(admin)/actions/auth/checkAuth"
 import { db } from "@/db/config"
 import { revalidatePath } from "next/cache"
 import {featuredImages} from "@/db/schema";

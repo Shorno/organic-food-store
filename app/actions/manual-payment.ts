@@ -1,6 +1,6 @@
 "use server"
 
-import {checkAuth} from "@/app/actions/auth/checkAuth";
+import {checkAuth} from "../../../b2b/app/(admin)/actions/auth/checkAuth";
 import {db} from "@/db/config";
 import {order, payment} from "@/db/schema";
 import {and, eq} from "drizzle-orm";
