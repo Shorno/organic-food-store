@@ -12,8 +12,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
     title: {
-        template: '%s | KhaatiBazar',
-        default: 'KhaatiBazar',
+        template: '%s | KhaatiBazar Shop',
+        default: 'KhaatiBazar Shop',
     },
     description: "Organic products shop.",
     keywords: ['organic products', 'natural foods', 'healthy living', 'organic shop'],
