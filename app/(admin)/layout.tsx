@@ -1,10 +1,10 @@
 import {SidebarInset, SidebarProvider} from "@/components/ui/sidebar";
 import {AppSidebar} from "@/components/dashboard/app-sidebar";
 import {SiteHeader} from "@/components/dashboard/site-header";
-import {checkAuth} from "../../../b2b/app/(admin)/actions/auth/checkAuth";
 import {unauthorized} from "next/navigation";
 import {NextIntlClientProvider} from "next-intl";
 import {getMessages} from "next-intl/server";
+import {checkAuth} from "@/app/actions/auth/checkAuth";
 
 export default async function AdminDashboardLayout({children}: { children: React.ReactNode }) {
     const session = await checkAuth();
