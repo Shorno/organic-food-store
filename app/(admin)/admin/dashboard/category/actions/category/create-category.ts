@@ -1,6 +1,6 @@
 "use server"
 
-import {checkAuth} from "@/app/actions/auth/checkAuth";
+import {checkAuth} from "../../../../../../../../b2b/app/(admin)/actions/auth/checkAuth";
 import {CreateCategoryFormValues, createCategorySchema} from "@/lib/schemas/category.scheam";
 import {z} from "zod";
 import {db} from "@/db/config";
