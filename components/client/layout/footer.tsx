@@ -33,7 +33,7 @@ export function Footer() {
                                         href="tel:+1234567890"
                                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                                     >
-                                        +1 (234) 567-890
+                                        +880 1618-106224
                                     </a>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -50,7 +50,7 @@ export function Footer() {
                             {/* Social Media Links */}
                             <div className="flex items-center gap-4 pt-2">
                                 <a
-                                    href="https://facebook.com"
+                                    href="https://www.facebook.com/profile.php?id=61580888133077#"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-muted-foreground hover:text-foreground transition-colors"
@@ -58,16 +58,6 @@ export function Footer() {
                                 >
                                     <Facebook className="w-5 h-5" />
                                 </a>
-                                <a
-                                    href="https://instagram.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-muted-foreground hover:text-foreground transition-colors"
-                                    aria-label="Instagram"
-                                >
-                                    <Instagram className="w-5 h-5" />
-                                </a>
-
                             </div>
                         </div>
 
