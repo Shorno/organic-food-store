@@ -16,10 +16,10 @@ export function Footer() {
                         {/* Brand Column - Left */}
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                                    <Image  src={"/logos/site-logo.png"} alt={"KhaatiBazar-logo"} width={24} height={24} />
+                                <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                                    <Image  src={"/logos/site-logo.png"} alt={"KhaatiBazar-logo"} width={50} height={50} />
                                 </div>
-                                <h2 className="font-bold text-lg text-foreground">KhaatiBazar</h2>
+                                <h2 className="font-bold text-lg text-foreground">KhaatiBazar Shop</h2>
                             </div>
                             <p className="text-sm text-muted-foreground">
                                 Your trusted online shopping destination for organic and natural products.
